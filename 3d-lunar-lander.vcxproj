@@ -198,6 +198,7 @@
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\octree.cc" />
     <ClCompile Include="src\ofApp.cc" />
+    <ClCompile Include="src\ray.cc" />
     <ClCompile Include="src\utility.cc" />
   </ItemGroup>
   <ItemGroup>

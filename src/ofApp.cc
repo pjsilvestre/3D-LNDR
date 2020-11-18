@@ -292,10 +292,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
     Box bounds =
         Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
-    bool hit =
-        bounds.intersect(Ray(Vector3(origin.x, origin.y, origin.z),
-                             Vector3(mouseDir.x, mouseDir.y, mouseDir.z)),
-                         0, 10000);
+    bool hit = bounds.intersect(Ray(origin, mouseDir), 0, 10000);
     if (hit) {
       bLanderSelected = true;
       mouseDownPos = getMousePointOnPlane(lander.getPosition(), cam.getZAxis());
@@ -315,8 +312,7 @@ bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
   ofVec3f rayPoint = cam.screenToWorld(mouse);
   ofVec3f rayDir = rayPoint - cam.getPosition();
   rayDir.normalize();
-  Ray ray = Ray(Vector3(rayPoint.x, rayPoint.y, rayPoint.z),
-                Vector3(rayDir.x, rayDir.y, rayDir.z));
+  Ray ray = Ray(rayPoint, rayDir);
 
   pointSelected = octree.intersect(ray, octree.root, selectedNode);
 
