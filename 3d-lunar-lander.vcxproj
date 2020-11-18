@@ -180,8 +180,6 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.cpp" />
     <ClCompile Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.cpp" />
     <ClCompile Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpModelLoader.cpp" />
@@ -198,7 +196,6 @@
     <ClCompile Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxGui\src\ofxToggle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.h" />
     <ClInclude Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.h" />
     <ClInclude Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpModelLoader.h" />
