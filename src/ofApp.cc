@@ -52,7 +52,7 @@ void ofApp::setup() {
 
   cout << "Number of Verts: " << mars.getMesh(0).getNumVertices() << endl;
 
-  testBox = Box(Vector3(3, 3, 0), Vector3(5, 5, 2));
+  testBox = Box(glm::vec3(3, 3, 0), glm::vec3(5, 5, 2));
 }
 
 //--------------------------------------------------------------
@@ -102,7 +102,7 @@ void ofApp::draw() {
         ofVec3f max = lander.getSceneMax() + lander.getPosition();
 
         Box bounds =
-            Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+            Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
         ofSetColor(ofColor::white);
         Octree::drawBox(bounds);
 
@@ -291,7 +291,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     ofVec3f max = lander.getSceneMax() + lander.getPosition();
 
     Box bounds =
-        Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+        Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
     bool hit = bounds.intersect(Ray(origin, mouseDir), 0, 10000);
     if (hit) {
       bLanderSelected = true;
@@ -342,7 +342,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
     ofVec3f max = lander.getSceneMax() + lander.getPosition();
 
     Box bounds =
-        Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+        Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
 
     colBoxList.clear();
     octree.intersect(bounds, octree.root, colBoxList);
@@ -505,7 +505,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
       // set up bounding box for lander while we are at it
       //
       landerBounds =
-          Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
+          Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
     }
   }
 }
