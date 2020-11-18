@@ -32,7 +32,7 @@ class ofApp : public ofBaseApp {
   void toggleSelectTerrain();
   void setCameraTarget();
   bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm,
-                           ofVec3f &point);
+                           glm::vec3& point);
   bool raySelectWithOctree(ofVec3f &pointRet);
   glm::vec3 ofApp::getMousePointOnPlane(glm::vec3 p, glm::vec3 n);
 

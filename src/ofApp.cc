@@ -307,7 +307,7 @@ void ofApp::mousePressed(int x, int y, int button) {
   }
 }
 
-bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
+bool ofApp::raySelectWithOctree(ofVec3f& pointRet) {
   ofVec3f mouse(mouseX, mouseY);
   ofVec3f rayPoint = cam.screenToWorld(mouse);
   ofVec3f rayDir = rayPoint - cam.getPosition();
@@ -422,7 +422,7 @@ void ofApp::savePicture() {
 // model is dropped in viewport, place origin under cursor
 //
 void ofApp::dragEvent2(ofDragInfo dragInfo) {
-  ofVec3f point;
+  glm::vec3 point;
   mouseIntersectPlane(ofVec3f(0, 0, 0), cam.getZAxis(), point);
   if (lander.loadModel(dragInfo.files[0])) {
     lander.setScaleNormalization(false);
@@ -441,12 +441,12 @@ void ofApp::dragEvent2(ofDragInfo dragInfo) {
 }
 
 bool ofApp::mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm,
-                                ofVec3f &point) {
+                                glm::vec3& point) {
   ofVec2f mouse(mouseX, mouseY);
   ofVec3f rayPoint = cam.screenToWorld(glm::vec3(mouseX, mouseY, 0));
   ofVec3f rayDir = rayPoint - cam.getPosition();
   rayDir.normalize();
-  return (rayIntersectPlane(rayPoint, rayDir, planePoint, planeNorm, point));
+  return (RayIntersectPlane(rayPoint, rayDir, planePoint, planeNorm, point));
 }
 
 //--------------------------------------------------------------

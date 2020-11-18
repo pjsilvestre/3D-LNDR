@@ -1,35 +1,41 @@
-
-// Kevin M.Smith - CS 134 SJSU
-
 #include "utility.h"
 
-//---------------------------------------------------------------
-// test if a ray intersects a plane.  If there is an intersection,
-// return true and put point of intersection in "point"
-//
-bool rayIntersectPlane(const ofVec3f &rayPoint, const ofVec3f &raydir,
-                       const ofVec3f &planePoint, const ofVec3f &planeNorm,
-                       ofVec3f &point) {
+/**
+ * @brief Determines if a ray intersects a plane.
+ * @param ray_origin The ray's origin
+ * @param ray_direction The ray's direction
+ * @param plane_point A point on the plane
+ * @param plane_normal A normal to the plane
+ * @param intersection_point The intersection point, if applicable
+ * @return True if the ray intersects the plane, false otherwise
+ */
+bool RayIntersectPlane(const glm::vec3& ray_origin,
+                       const glm::vec3& ray_direction,
+                       const glm::vec3& plane_point,
+                       const glm::vec3& plane_normal,
+                       glm::vec3& intersection_point) {
+  const auto epsilon = .000000001f;
+
+  const auto d1 = dot(plane_point - ray_origin, plane_normal);
   // if d1 is 0, then the ray is on the plane or there is no intersection
-  //
-  const float eps = .000000001;
-  float d1 = (planePoint - rayPoint).dot(planeNorm);
-  if (abs(d1) < eps) return false;
+  if (abs(d1) < epsilon) return false;
 
+  const auto d2 = dot(ray_direction, plane_normal);
   //  if d2 is 0, then the ray is parallel to the plane
-  //
-  float d2 = raydir.dot(planeNorm);
-  if (abs(d2) < eps) return false;
+  if (abs(d2) < epsilon) return false;
 
-  //  compute the intersection point and return it in "point"
-  //
-  point = (d1 / d2) * raydir + rayPoint;
+  //  compute the intersection point and return it in "intersection_point"
+  intersection_point = (d1 / d2) * ray_direction + ray_origin;
   return true;
 }
 
-// Compute the reflection of a vector incident on a surface at the normal.
-//
-//
-ofVec3f reflectVector(const ofVec3f &v, const ofVec3f &n) {
-  return (v - 2 * v.dot(n) * n);
+/**
+ * @brief Computes the reflection of a vector incident on a surface at the
+ * normal
+ * @param vector The vector to reflect
+ * @param normal The surface normal
+ * @return The reflected vector
+ */
+glm::vec3 ReflectVector(const glm::vec3& vector, const glm::vec3& normal) {
+  return vector - 2 * dot(vector, normal) * normal;
 }
