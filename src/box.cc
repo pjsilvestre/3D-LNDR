@@ -1,7 +1,16 @@
 #include "box.h"
 
+/**
+ * @brief Creates a Box
+ * @param min The desired minimum corner
+ * @param max The desired maximum corner
+ */
 Box::Box(const glm::vec3 &min, const glm::vec3 &max) : corners_{min, max} {}
 
+/**
+ * @brief Gets the center of this Box
+ * @return A vector representing the center of this Box
+ */
 glm::vec3 Box::center() {
   auto center = max() - min();
   center.x /= 2;
@@ -38,14 +47,18 @@ bool Box::inside(const std::vector<glm::vec3> &points) const {
   return true;
 }
 
-/*
- * Ray-box intersection using IEEE numerical properties to ensure that the
- * test is both robust and efficient, as described in:
- *  Amy Williams, Steve Barrus, R. Keith Morley, and Peter Shirley
- *  "An Efficient and Robust Ray-Box Intersection Algorithm"
- *  Journal of graphics tools, 10(1):49-54, 2005
+/**
+ * @brief Determines if a ray intersects this Box
+ * @details Determines if a ray this Box using IEEE numerical properties to
+ * ensure that the test is both robust and efficient, as described in Amy
+ * Williams, Steve Barrus, R. Keith Morley, and Peter Shirley "An Efficient and
+ * Robust Ray-Box Intersection Algorithm" Journal of graphics tools,
+ * 10(1):49-54, 2005
+ * @param ray The ray to test
+ * @param z_buffer_min The minimum z-buffer distance for culling
+ * @param z_buffer_max The maximum z-buffer distance for culling
+ * @return True if the ray intersects this Box, false otherwise
  */
-
 bool Box::intersect(const Ray &ray, const float z_buffer_min,
                     const float z_buffer_max) const {
   auto x_min =
@@ -75,6 +88,11 @@ bool Box::intersect(const Ray &ray, const float z_buffer_min,
   return x_min < z_buffer_max && x_max > z_buffer_min;
 }
 
+/**
+ * @brief Determines if this Box overlaps with another Box
+ * @param box The other Box to check
+ * @return True if this Box overlaps the other Box, false otherwise
+ */
 bool Box::overlap(const Box &box) {
   // TODO
   return true;
