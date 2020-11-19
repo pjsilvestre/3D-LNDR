@@ -1,203 +1,215 @@
-
-//--------------------------------------------------------------
-//
-//  Kevin M. Smith
-//
-//  Simple Octree Implementation 11/10/2020
-//
-//  Copyright (c) by Kevin M. Smith
-//  Copying or use without permission is prohibited by law.
-//
-
 #include "octree.h"
 
-// draw a box from a "Box" class
-//
-void Octree::drawBox(const Box &box) {
-  glm::vec3 min = box.corners_[0];
-  glm::vec3 max = box.corners_[1];
-  glm::vec3 size = max - min;
-  glm::vec3 center = size / 2 + min;
-  ofVec3f p = ofVec3f(center.x, center.y, center.z);
-  float w = size.x;
-  float h = size.y;
-  float d = size.z;
-  ofDrawBox(p, w, h, d);
-}
+/**
+ * @brief Creates an Octree
+ * @param mesh The desired mesh to spatially partition
+ * @param num_levels
+ */
+Octree::Octree(const ofMesh &mesh, const int num_levels) {
+  mesh_ = mesh;
+  root_.box_ = Box::getMeshBoundingBox(mesh);
+  auto level{0};
 
-// return a Mesh Bounding Box for the entire Mesh
-//
-Box Octree::meshBounds(const ofMesh &mesh) {
-  int n = mesh.getNumVertices();
-  ofVec3f v = mesh.getVertex(0);
-  ofVec3f max = v;
-  ofVec3f min = v;
-  for (int i = 1; i < n; i++) {
-    ofVec3f v = mesh.getVertex(i);
-
-    if (v.x > max.x)
-      max.x = v.x;
-    else if (v.x < min.x)
-      min.x = v.x;
-
-    if (v.y > max.y)
-      max.y = v.y;
-    else if (v.y < min.y)
-      min.y = v.y;
-
-    if (v.z > max.z)
-      max.z = v.z;
-    else if (v.z < min.z)
-      min.z = v.z;
-  }
-  cout << "vertices: " << n << endl;
-  //	cout << "min: " << min << "max: " << max << endl;
-  return Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
-}
-
-// getMeshPointsInBox:  return an array of indices to points in mesh that are
-// contained
-//                      inside the Box.  Return count of points found;
-//
-int Octree::getMeshPointsInBox(const ofMesh &mesh, const vector<int> &points,
-                               Box &box, vector<int> &pointsRtn) {
-  int count = 0;
-  for (int i = 0; i < points.size(); i++) {
-    ofVec3f v = mesh.getVertex(points[i]);
-    if (box.inside(glm::vec3(v.x, v.y, v.z))) {
-      count++;
-      pointsRtn.push_back(points[i]);
-    }
-  }
-  return count;
-}
-
-// getMeshFacesInBox:  return an array of indices to Faces in mesh that are
-// contained
-//                      inside the Box.  Return count of faces found;
-//
-int Octree::getMeshFacesInBox(const ofMesh &mesh, const vector<int> &faces,
-                              Box &box, vector<int> &facesRtn) {
-  int count = 0;
-  for (int i = 0; i < faces.size(); i++) {
-    ofMeshFace face = mesh.getFace(faces[i]);
-    ofVec3f v[3];
-    v[0] = face.getVertex(0);
-    v[1] = face.getVertex(1);
-    v[2] = face.getVertex(2);
-    auto p = vector<glm::vec3>{v[0], v[1], v[2]};
-    if (box.inside(p)) {
-      count++;
-      facesRtn.push_back(faces[i]);
-    }
-  }
-  return count;
-}
-
-//  Subdivide a Box into eight(8) equal size boxes, return them in boxList;
-//
-void Octree::subDivideBox8(const Box &box, vector<Box> &boxList) {
-  glm::vec3 min = box.corners_[0];
-  glm::vec3 max = box.corners_[1];
-  glm::vec3 size = max - min;
-  glm::vec3 center = size / 2 + min;
-  float xdist = (max.x - min.x) / 2;
-  float ydist = (max.y - min.y) / 2;
-  float zdist = (max.z - min.z) / 2;
-  glm::vec3 h = glm::vec3(0, ydist, 0);
-
-  //  generate ground floor
-  //
-  Box b[8];
-  b[0] = Box(min, center);
-  b[1] = Box(b[0].min() + glm::vec3(xdist, 0, 0),
-             b[0].max() + glm::vec3(xdist, 0, 0));
-  b[2] = Box(b[1].min() + glm::vec3(0, 0, zdist),
-             b[1].max() + glm::vec3(0, 0, zdist));
-  b[3] = Box(b[2].min() + glm::vec3(-xdist, 0, 0),
-             b[2].max() + glm::vec3(-xdist, 0, 0));
-
-  boxList.clear();
-  for (int i = 0; i < 4; i++) boxList.push_back(b[i]);
-
-  // generate second story
-  //
-  for (int i = 4; i < 8; i++) {
-    b[i] = Box(b[i - 4].min() + h, b[i - 4].max() + h);
-    boxList.push_back(b[i]);
-  }
-}
-
-void Octree::create(const ofMesh &geo, int numLevels) {
-  // initialize octree structure
-  //
-  mesh = geo;
-  int level = 0;
-  root.box = meshBounds(mesh);
-  if (!bUseFaces) {
-    for (int i = 0; i < mesh.getNumVertices(); i++) {
-      root.points.push_back(i);
-    }
+  if (use_mesh_faces_) {
+    // TODO load face vertices (?)
   } else {
-    // need to load face vertices here
-    //
+    for (auto i = 0; i < mesh.getNumVertices(); i++) {
+      root_.points_.push_back(i);
+    }
   }
 
-  // recursively buid octree
-  //
   level++;
-  subdivide(mesh, root, numLevels, level);
+  subdivide(mesh, root_, num_levels, level);
 }
 
-void Octree::subdivide(const ofMesh &mesh, TreeNode &node, int numLevels,
-                       int level) {
-  if (level >= numLevels) return;
-  vector<Box> boxList;
-  subDivideBox8(node.box, boxList);
-  level++;
-  int pointsInNode = node.points.size();
-  int totalPoints = 0;
-  for (int i = 0; i < boxList.size(); i++) {
+/**
+ * @brief Subdivides the Octree recursively
+ * @param mesh The desired mesh to spatially partition
+ * @param node The current "parent" node being divided
+ * @param num_levels The total number of Octree level divisions
+ * @param current_level The current Octree level division
+ */
+void Octree::subdivide(const ofMesh &mesh, TreeNode &node, const int num_levels,
+                       int current_level) {
+  if (current_level >= num_levels) return;
+
+  current_level++;
+  auto total_points{0};
+  auto sub_boxes = SubdivideBox8(node.box_);
+
+  for (auto &box : sub_boxes) {
     TreeNode child;
-    int count = 0;
-    if (!bUseFaces)
-      count = getMeshPointsInBox(mesh, node.points, boxList[i], child.points);
-    else
-      count = getMeshFacesInBox(mesh, node.points, boxList[i], child.points);
-    totalPoints += count;
+
+    if (use_mesh_faces_) {
+      child.points_ = GetMeshFacesInBox(mesh, node.points_, box);
+    } else {
+      child.points_ = GetMeshPointsInBox(mesh, node.points_, box);
+    }
+
+    const auto count{child.points_.size()};
+    total_points += count;
 
     if (count > 0) {
-      child.box = boxList[i];
-      node.children.push_back(child);
+      child.box_ = box;
+      node.children_nodes_.push_back(child);
+
       if (count > 1) {
-        subdivide(mesh, node.children.back(), numLevels, level);
+        subdivide(mesh, node.children_nodes_.back(), num_levels, current_level);
       }
     }
   }
+
   // debug
-  //
-  if (pointsInNode != totalPoints) {
-    strayVerts += (pointsInNode - totalPoints);
+  const auto points_in_node{node.points_.size()};
+  if (points_in_node != total_points) {
+    debug_stray_vertices_ += (points_in_node - total_points);
+    if (debug_stray_vertices_ > 0) {
+      cerr << "number of stray vertices: " << debug_stray_vertices_ << endl;
+    }
   }
 }
 
-// Implement functions below for Homework project
-//
+/**
+ * @brief Subdivides a Box into 8 sub-boxes
+ * @param box The Box to divide
+ * @return The Box's 8 sub-boxes
+ */
+vector<Box> Octree::SubdivideBox8(const Box &box) {
+  const auto min = box.min();
+  const auto max = box.max();
+  const auto size = max - min;
+  const auto center = size / 2 + min;
+  const auto half_x_width = (max.x - min.x) / 2;
+  const auto half_y_width = (max.y - min.y) / 2;
+  const auto half_z_width = (max.z - min.z) / 2;
+  const auto height = glm::vec3(0, half_y_width, 0);
+  vector<Box> sub_boxes;
 
-bool Octree::intersect(const Ray &ray, const TreeNode &node,
-                       TreeNode &nodeRtn) {
-  bool intersects = false;
-  return intersects;
+  // generate "first floor"
+  Box b[8];
+  b[0] = Box(min, center);
+  b[1] = Box(b[0].min() + glm::vec3(half_x_width, 0, 0),
+             b[0].max() + glm::vec3(half_x_width, 0, 0));
+  b[2] = Box(b[1].min() + glm::vec3(0, 0, half_z_width),
+             b[1].max() + glm::vec3(0, 0, half_z_width));
+  b[3] = Box(b[2].min() + glm::vec3(-half_x_width, 0, 0),
+             b[2].max() + glm::vec3(-half_x_width, 0, 0));
+
+  for (auto i = 0; i < 4; i++) {
+    sub_boxes.push_back(b[i]);
+  }
+
+  // generate "second floor"
+  for (auto i = 4; i < 8; i++) {
+    b[i] = Box(b[i - 4].min() + height, b[i - 4].max() + height);
+    sub_boxes.push_back(b[i]);
+  }
+
+  return sub_boxes;
 }
 
+/**
+ * @brief Gets the indices of faces in a mesh that are contained within a box
+ * @param mesh The total mesh to query
+ * @param faces The mesh's faces
+ * @param box The Box to define the query boundary
+ * @return The indices of faces in the mesh contained within the Box
+ */
+vector<int> Octree::GetMeshFacesInBox(const ofMesh &mesh,
+                                      const vector<int> &faces,
+                                      const Box &box) {
+  vector<int> indices;
+
+  for (const auto &face : faces) {
+    auto mesh_face = mesh.getFace(face);
+    auto points = vector<glm::vec3>{
+        mesh_face.getVertex(0), mesh_face.getVertex(1), mesh_face.getVertex(2)};
+
+    if (box.inside(points)) {
+      indices.push_back(face);
+    }
+  }
+
+  return indices;
+}
+
+/**
+ * @brief Gets the indices of points in a mesh contained within a Box
+ * @param mesh The total mesh to query
+ * @param points The mesh's points
+ * @param box The Box to define the query boundary
+ * @return The indices of points in the mesh contained within the Box
+ */
+vector<int> Octree::GetMeshPointsInBox(const ofMesh &mesh,
+                                       const vector<int> &points,
+                                       const Box &box) {
+  vector<int> indices;
+
+  for (const auto &point : points) {
+    auto vertex = mesh.getVertex(point);
+
+    if (box.inside(vertex)) {
+      indices.push_back(point);
+    }
+  }
+
+  return indices;
+}
+
+/**
+ * @brief Draws this Octree
+ * @param num_levels The total number of Octree level divisions
+ * @param current_level The current Octree level division
+ */
+void Octree::draw(const int num_levels, const int current_level) const {
+  draw(root_, num_levels, current_level);
+}
+
+/**
+ * @brief Draws only this Octree's leaf nodes
+ * @param node TODO
+ */
+void Octree::drawLeafNodes(const TreeNode &node) {
+  // TODO optional
+}
+
+/**
+ * @brief TODO
+ * @param box TODO
+ * @param node TODO
+ * @param box_list_rtn TODO
+ * @return TODO
+ */
 bool Octree::intersect(const Box &box, TreeNode &node,
-                       vector<Box> &boxListRtn) {
-  bool intersects = false;
+                       vector<Box> &box_list_rtn) {
+  // TODO
+  auto intersects = false;
   return intersects;
 }
 
-void Octree::draw(TreeNode &node, int numLevels, int level) {}
+/**
+ * @brief TODO
+ * @param ray TODO
+ * @param node TODO
+ * @param node_rtn TODO
+ * @return TODO
+ */
+bool Octree::intersect(const Ray &ray, const TreeNode &node,
+                       TreeNode &node_rtn) {
+  // TODO
+  auto intersects = false;
+  return intersects;
+}
 
-// Optional
-//
-void Octree::drawLeafNodes(TreeNode &node) {}
+//-Private Methods----------------------------------------------
+void Octree::draw(const TreeNode &node, const int num_levels,
+                  int current_level) const {
+  if (current_level >= num_levels) return;
+
+  current_level++;
+  node.box_.draw();
+
+  for (const auto &child : node.children_nodes_) {
+    draw(child, num_levels, current_level);
+  }
+}

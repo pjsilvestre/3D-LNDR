@@ -20,6 +20,18 @@ glm::vec3 Box::center() {
 
   return center;
 }
+/**
+ * @brief Draws this Box's wireframe
+ */
+void Box::draw() const {
+  const auto &min_corner = corners_[0];
+  const auto &max_corner = corners_[1];
+  const auto size = max_corner - min_corner;
+  const auto center = size / 2 + min_corner;
+
+  ofNoFill();
+  ofDrawBox(center, size.x, size.y, size.z);
+}
 
 /**
  * @brief Determines if a point is within this Box
@@ -96,4 +108,36 @@ bool Box::intersect(const Ray &ray, const float z_buffer_min,
 bool Box::overlap(const Box &box) {
   // TODO
   return true;
+}
+
+Box Box::getMeshBoundingBox(const ofMesh &mesh) {
+  // return a Mesh Bounding Box for the entire Mesh
+  const auto num_vertices{mesh.getNumVertices()};
+  const auto first_vertex = mesh.getVertex(0);
+  auto max = first_vertex;
+  auto min = first_vertex;
+
+  for (auto i = 1; i < num_vertices; i++) {
+    const auto current_vertex = mesh.getVertex(i);
+
+    if (current_vertex.x > max.x)
+      max.x = current_vertex.x;
+    else if (current_vertex.x < min.x)
+      min.x = current_vertex.x;
+
+    if (current_vertex.y > max.y)
+      max.y = current_vertex.y;
+    else if (current_vertex.y < min.y)
+      min.y = current_vertex.y;
+
+    if (current_vertex.z > max.z)
+      max.z = current_vertex.z;
+    else if (current_vertex.z < min.z)
+      min.z = current_vertex.z;
+  }
+
+  //cout << "vertices: " << num_vertices << endl;
+  //cout << "min: " << min << ", max: " << max << endl;
+
+  return Box{min, max};
 }

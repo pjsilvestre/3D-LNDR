@@ -47,8 +47,7 @@ void ofApp::setup() {
 
   //  Create Octree for testing.
   //
-
-  octree.create(mars.getMesh(0), 20);
+  octree = Octree(mars.getMesh(0), 10);
 
   cout << "Number of Verts: " << mars.getMesh(0).getNumVertices() << endl;
 
@@ -92,7 +91,7 @@ void ofApp::draw() {
           ofPushMatrix();
           ofMultMatrix(lander.getModelMatrix());
           ofRotate(-90, 1, 0, 0);
-          Octree::drawBox(bboxList[i]);
+          (bboxList[i].draw());
           ofPopMatrix();
         }
       }
@@ -104,13 +103,13 @@ void ofApp::draw() {
         Box bounds =
             Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
         ofSetColor(ofColor::white);
-        Octree::drawBox(bounds);
+        bounds.draw();
 
         // draw colliding boxes
         //
         ofSetColor(ofColor::lightBlue);
         for (int i = 0; i < colBoxList.size(); i++) {
-          Octree::drawBox(colBoxList[i]);
+          colBoxList[i].draw();
         }
       }
     }
@@ -137,8 +136,8 @@ void ofApp::draw() {
   //	ofNoFill();
 
   if (bDisplayLeafNodes) {
-    octree.drawLeafNodes(octree.root);
-    cout << "num leaf: " << octree.numLeaf << endl;
+    octree.drawLeafNodes(octree.root_);
+    cout << "num leaf: " << octree.number_of_leaves_ << endl;
   } else if (bDisplayOctree) {
     ofNoFill();
     ofSetColor(ofColor::white);
@@ -148,7 +147,7 @@ void ofApp::draw() {
   // if point selected, draw a sphere
   //
   if (pointSelected) {
-    ofVec3f p = octree.mesh.getVertex(selectedNode.points[0]);
+    ofVec3f p = octree.mesh_.getVertex(selectedNode.points_[0]);
     ofVec3f d = p - cam.getPosition();
     ofSetColor(ofColor::lightGreen);
     ofDrawSphere(p, .02 * d.length());
@@ -314,10 +313,10 @@ bool ofApp::raySelectWithOctree(ofVec3f& pointRet) {
   rayDir.normalize();
   Ray ray = Ray(rayPoint, rayDir);
 
-  pointSelected = octree.intersect(ray, octree.root, selectedNode);
+  pointSelected = octree.intersect(ray, octree.root_, selectedNode);
 
   if (pointSelected) {
-    pointRet = octree.mesh.getVertex(selectedNode.points[0]);
+    pointRet = octree.mesh_.getVertex(selectedNode.points_[0]);
   }
   return pointSelected;
 }
@@ -345,7 +344,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
         Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
 
     colBoxList.clear();
-    octree.intersect(bounds, octree.root, colBoxList);
+    octree.intersect(bounds, octree.root_, colBoxList);
 
     /*if (bounds.overlap(testBox)) {
             cout << "overlap" << endl;
@@ -432,7 +431,7 @@ void ofApp::dragEvent2(ofDragInfo dragInfo) {
 
     bLanderLoaded = true;
     for (int i = 0; i < lander.getMeshCount(); i++) {
-      bboxList.push_back(Octree::meshBounds(lander.getMesh(i)));
+      bboxList.push_back(Box::getMeshBoundingBox(lander.getMesh(i)));
     }
 
     cout << "Mesh Count: " << lander.getMeshCount() << endl;
@@ -462,7 +461,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
     cout << "number of meshes: " << lander.getNumMeshes() << endl;
     bboxList.clear();
     for (int i = 0; i < lander.getMeshCount(); i++) {
-      bboxList.push_back(Octree::meshBounds(lander.getMesh(i)));
+      bboxList.push_back(Box::getMeshBoundingBox(lander.getMesh(i)));
     }
 
     //		lander.setRotation(1, 180, 1, 0, 0);
