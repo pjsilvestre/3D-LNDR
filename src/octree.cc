@@ -3,7 +3,7 @@
 /**
  * @brief Creates an Octree
  * @param mesh The desired mesh to spatially partition
- * @param num_levels
+ * @param num_levels The total number of Octree level divisions
  */
 Octree::Octree(const ofMesh &mesh, const int num_levels) {
   mesh_ = mesh;
@@ -188,17 +188,31 @@ bool Octree::intersect(const Box &box, TreeNode &node,
 }
 
 /**
- * @brief TODO
- * @param ray TODO
- * @param node TODO
- * @param node_rtn TODO
- * @return TODO
+ * @brief Determines which leaf node in this Octree is intersected by a given
+ * ray
+ * @param ray The ray potentially intersecting this Octree
+ * @param node The current node being checked for intersection, which may or may
+ * not have children nodes
+ * @param node_rtn (SIDE EFFECT RETURN VALUE) The final, intersected leaf node
+ * @return True if the ray intersects the Octree, false otherwise
  */
 bool Octree::intersect(const Ray &ray, const TreeNode &node,
                        TreeNode &node_rtn) {
-  // TODO
-  auto intersects = false;
-  return intersects;
+  // FIXME not all control paths return a value
+
+  if (node.box_.intersect(ray, -1000, 1000)) {
+    if (node.children_nodes_.empty()) {
+      node_rtn = node;
+      return true;
+    }
+
+    for (const auto &child : node.children_nodes_) {
+      intersect(ray, child, node_rtn);
+    }
+
+  } else {
+    return false;
+  }
 }
 
 //-Private Methods----------------------------------------------
