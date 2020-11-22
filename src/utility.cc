@@ -6,14 +6,15 @@
  * @param ray_direction The ray's direction
  * @param plane_point A point on the plane
  * @param plane_normal A normal to the plane
- * @param intersection_point The intersection point, if applicable
+ * @param intersection_point (SIDE EFFECT RETURN VALUE) The intersection point,
+ * if applicable
  * @return True if the ray intersects the plane, false otherwise
  */
-bool RayIntersectPlane(const glm::vec3& ray_origin,
-                       const glm::vec3& ray_direction,
-                       const glm::vec3& plane_point,
-                       const glm::vec3& plane_normal,
-                       glm::vec3& intersection_point) {
+bool Utility::RayIntersectPlane(const glm::vec3& ray_origin,
+                                const glm::vec3& ray_direction,
+                                const glm::vec3& plane_point,
+                                const glm::vec3& plane_normal,
+                                glm::vec3& intersection_point) {
   const auto epsilon = .000000001f;
 
   const auto d1 = dot(plane_point - ray_origin, plane_normal);
@@ -36,6 +37,7 @@ bool RayIntersectPlane(const glm::vec3& ray_origin,
  * @param normal The surface normal
  * @return The reflected vector
  */
-glm::vec3 ReflectVector(const glm::vec3& vector, const glm::vec3& normal) {
+glm::vec3 Utility::ReflectVector(const glm::vec3& vector,
+                                 const glm::vec3& normal) {
   return vector - 2 * dot(vector, normal) * normal;
 }

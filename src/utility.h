@@ -10,10 +10,14 @@
 #include "glm/geometric.hpp"
 #include "glm/vec3.hpp"
 
-bool RayIntersectPlane(const glm::vec3& ray_origin,
-                       const glm::vec3& ray_direction,
-                       const glm::vec3& plane_point,
-                       const glm::vec3& plane_normal,
-                       glm::vec3& intersection_point);
+class Utility {
+ public:
+  static bool RayIntersectPlane(const glm::vec3& ray_origin,
+                                const glm::vec3& ray_direction,
+                                const glm::vec3& plane_point,
+                                const glm::vec3& plane_normal,
+                                glm::vec3& intersection_point);
 
-glm::vec3 ReflectVector(const glm::vec3& vector, const glm::vec3& normal);
+  static glm::vec3 ReflectVector(const glm::vec3& vector,
+                                 const glm::vec3& normal);
+};

@@ -45,8 +45,9 @@ class ofApp : public ofBaseApp {
   void mouseMoved(int x, int y) override;
 
   void mouseDragged(int x, int y, int button) override;
-  glm::vec3 getMousePointOnPlane(glm::vec3 p, glm::vec3 n);
-  bool raySelectWithOctree(ofVec3f& pointRet);
+  glm::vec3 GetMousePointOnPlane(const glm::vec3& plane_origin,
+                                 const glm::vec3& plane_normal);
+  bool SelectOctreeNode(glm::vec3& return_point);
 
   void mousePressed(int x, int y, int button) override;
 
@@ -60,9 +61,9 @@ class ofApp : public ofBaseApp {
 
   void gotMessage(ofMessage msg) override;
 
-  bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm,
-                           glm::vec3& point);
-  void setCameraTarget();
+  //bool MouseIntersectPlane(const glm::vec3& plane_point, const glm::vec3& plane_normal,
+  //                         glm::vec3& intersection_point);
+  void SetCameraTarget();
 
   bool alt_key_down_{false};
   bool ctrl_key_down_{false};
@@ -90,10 +91,8 @@ class ofApp : public ofBaseApp {
 
   ofVec3f selected_point_;
   ofVec3f intersect_point_;
-  glm::vec3 mouse_down_pos_;
   glm::vec3 mouse_last_pos_;
 
-  Box bounding_box_;
   Box lander_bounds_;
   vector<Box> lander_bounding_boxes_;
   vector<Box> lander_collision_boxes_;

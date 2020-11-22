@@ -154,12 +154,8 @@ void ofApp::DrawLanderBoundingBoxes() {
 
 //--------------------------------------------------------------
 void ofApp::DrawLanderBounds() {
-  ofPushMatrix();
-  ofMultMatrix(lander_.getModelMatrix());
-  ofNoFill();
   ofSetColor(ofColor::white);
   lander_bounds_.Draw();
-  ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -249,7 +245,7 @@ void ofApp::keyPressed(const int key) {
       break;
     case 'T':
     case 't':
-      setCameraTarget();
+      SetCameraTarget();
       break;
     case 'U':
     case 'u':
@@ -323,73 +319,71 @@ void ofApp::mouseMoved(int x, int y) {}
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-  // if moving camera, don't allow mouse interaction
   if (cam_.getMouseInputEnabled()) return;
 
   if (dragging_) {
-    glm::vec3 landerPos = lander_.getPosition();
+    auto lander_position{lander_.getPosition()};
+    const auto mouse_position{
+        GetMousePointOnPlane(lander_position, cam_.getZAxis())};
+    const auto delta{mouse_position - mouse_last_pos_};
 
-    glm::vec3 mousePos = getMousePointOnPlane(landerPos, cam_.getZAxis());
-    glm::vec3 delta = mousePos - mouse_last_pos_;
+    lander_position += delta;
 
-    landerPos += delta;
-    lander_.setPosition(landerPos.x, landerPos.y, landerPos.z);
-    mouse_last_pos_ = mousePos;
+    lander_.setPosition(lander_position.x, lander_position.y,
+                        lander_position.z);
+    mouse_last_pos_ = mouse_position;
 
-    ofVec3f min = lander_.getSceneMin() + lander_.getPosition();
-    ofVec3f max = lander_.getSceneMax() + lander_.getPosition();
+    const auto min_lander_bounds{lander_.getSceneMin() + lander_.getPosition()};
+    const auto max_lander_bounds{lander_.getSceneMax() + lander_.getPosition()};
+    const auto new_lander_bounds{Box(min_lander_bounds, max_lander_bounds)};
 
-    Box bounds =
-        Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
+    lander_bounds_ = new_lander_bounds;
 
     lander_collision_boxes_.clear();
-    octree_.Intersect(bounds, octree_.root_, lander_collision_boxes_);
+    octree_.Intersect(lander_bounds_, octree_.root_, lander_collision_boxes_);
   } else {
-    ofVec3f p;
-    raySelectWithOctree(p);
+    glm::vec3 unused_point;
+    SelectOctreeNode(unused_point);
   }
 }
 
 //--------------------------------------------------------------
-glm::vec3 ofApp::getMousePointOnPlane(glm::vec3 planePt, glm::vec3 planeNorm) {
-  //  intersect the mouse ray with the plane normal to the camera
-  //  return intersection point.   (package code above into function)
+glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
+                                      const glm::vec3& plane_normal) {
+  // intersect the mouse ray with the plane normal to the camera
+  // return intersection point.
 
-  // Setup our rays
-  glm::vec3 origin = cam_.getPosition();
-  glm::vec3 camAxis = cam_.getZAxis();
-  glm::vec3 mouseWorld = cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
-  glm::vec3 mouseDir = glm::normalize(mouseWorld - origin);
+  // ray setup
+  const auto origin{cam_.getPosition()};
+  const auto mouse_world_space{
+      cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0))};
+  const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
   float distance;
 
-  bool hit =
-      glm::intersectRayPlane(origin, mouseDir, planePt, planeNorm, distance);
+  const auto hit{glm::intersectRayPlane(origin, mouse_direction, plane_origin,
+                                        plane_normal, distance)};
 
   if (hit) {
-    // find the point of intersection on the plane using the distance
-    // We use the parametric line or vector representation of a line to compute
-    //
-    // p' = p + s * dir;
-    //
-    glm::vec3 intersectPoint = origin + distance * mouseDir;
+    // find the point of intersection on the plane. compute using parametric
+    // representation of a line: p' = p + s * dir;
+    const auto intersection_point{origin + distance * mouse_direction};
 
-    return intersectPoint;
+    return intersection_point;
   } else
-    return glm::vec3(0, 0, 0);
+    return glm::vec3(0.0f);
 }
 
 //--------------------------------------------------------------
-bool ofApp::raySelectWithOctree(ofVec3f& pointRet) {
-  ofVec3f mouse(mouseX, mouseY);
-  ofVec3f rayPoint = cam_.screenToWorld(mouse);
-  ofVec3f rayDir = rayPoint - cam_.getPosition();
-  rayDir.normalize();
-  Ray ray = Ray(rayPoint, rayDir);
+bool ofApp::SelectOctreeNode(glm::vec3& return_point) {
+  const auto mouse{glm::vec3(mouseX, mouseY, 0.0f)};
+  const auto ray_origin{cam_.screenToWorld(mouse)};
+  const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
+  const auto mouse_ray{Ray(ray_origin, ray_direction)};
 
-  point_selected_ = octree_.Intersect(ray, octree_.root_, selected_node_);
+  point_selected_ = octree_.Intersect(mouse_ray, octree_.root_, selected_node_);
 
   if (point_selected_) {
-    pointRet = octree_.mesh_.getVertex(selected_node_.points_[0]);
+    return_point = octree_.mesh_.getVertex(selected_node_.points_[0]);
   }
 
   return point_selected_;
@@ -397,36 +391,37 @@ bool ofApp::raySelectWithOctree(ofVec3f& pointRet) {
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-  // if moving camera, don't allow mouse interaction
   if (cam_.getMouseInputEnabled()) return;
 
-  // if rover is loaded, test for selection
   if (lander_loaded_) {
-    glm::vec3 origin = cam_.getPosition();
-    glm::vec3 mouseWorld = cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
-    glm::vec3 mouseDir = glm::normalize(mouseWorld - origin);
+    const auto origin{cam_.getPosition()};
+    const auto mouse_world_space{
+        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0))};
+    const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
 
-    ofVec3f min = lander_.getSceneMin() + lander_.getPosition();
-    ofVec3f max = lander_.getSceneMax() + lander_.getPosition();
+    const auto min_lander_bounds{lander_.getSceneMin() + lander_.getPosition()};
+    const auto max_lander_bounds{lander_.getSceneMax() + lander_.getPosition()};
+    const auto new_lander_bounds{Box(min_lander_bounds, max_lander_bounds)};
 
-    Box bounds =
-        Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
-    bool hit = bounds.Intersect(Ray(origin, mouseDir), 0, 10000);
+    lander_bounds_ = new_lander_bounds;
+
+    const auto hit =
+        lander_bounds_.Intersect(Ray(origin, mouse_direction), 0, 10000);
 
     if (hit) {
       lander_selected_ = true;
       terrain_selected_ = false;
-      mouse_down_pos_ =
-          getMousePointOnPlane(lander_.getPosition(), cam_.getZAxis());
-      mouse_last_pos_ = mouse_down_pos_;
       dragging_ = true;
+      mouse_last_pos_ =
+          GetMousePointOnPlane(lander_.getPosition(), cam_.getZAxis());
     } else {
       lander_selected_ = false;
       terrain_selected_ = true;
+      dragging_ = false;
     }
   } else {
-    ofVec3f p;
-    raySelectWithOctree(p);
+    glm::vec3 unused_point;
+    SelectOctreeNode(unused_point);
   }
 }
 
@@ -444,78 +439,68 @@ void ofApp::windowResized(int w, int h) {}
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo) {
-  // support drag-and-drop of model (.obj) file loading.  when
+  // support drag-and-drop of model (.obj) file loading. when
   // model is dropped in viewport, place origin under cursor
 
   if (lander_.loadModel(dragInfo.files[0])) {
     lander_loaded_ = true;
+    lander_.setPosition(0.0f, 0.0f, 0.0f);
     lander_.setScaleNormalization(false);
-    lander_.setPosition(0, 0, 0);
+
     cout << "number of meshes: " << lander_.getNumMeshes() << endl;
+
     lander_bounding_boxes_.clear();
 
-    for (int i = 0; i < lander_.getMeshCount(); i++) {
+    for (auto i = 0; i < lander_.getMeshCount(); i++) {
       lander_bounding_boxes_.push_back(
           Box::CreateMeshBoundingBox(lander_.getMesh(i)));
     }
 
-    // lander_.setRotation(1, 180, 1, 0, 0);
+    // goal: place model at mouse pointer
+    // strategy: intersect a plane parallel to camera plane. find point of
+    // intersection, then place lander there.
 
-    // We want to drag and drop a 3D object in space so that the model appears
-    // under the mouse pointer where you drop it !
-    //
-    // Our strategy: intersect a plane parallel to the camera plane where the
-    // mouse drops the model once we find the point of intersection, we can
-    // position the lander/lander at that location.
-    //
-
-    // Setup our rays
-    glm::vec3 origin = cam_.getPosition();
-    glm::vec3 camAxis = cam_.getZAxis();
-    glm::vec3 mouseWorld = cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
-    glm::vec3 mouseDir = glm::normalize(mouseWorld - origin);
+    // ray setup
+    const auto origin{cam_.getPosition()};
+    const auto mouse_world_space{
+        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0))};
+    const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
+    const auto plane_origin{glm::vec3(0.0f)};
+    const auto plane_normal{cam_.getZAxis()};
     float distance;
 
-    bool hit = glm::intersectRayPlane(origin, mouseDir, glm::vec3(0, 0, 0),
-                                      camAxis, distance);
-    if (hit) {
-      // find the point of intersection on the plane using the distance
-      // We use the parametric line or vector representation of a line to
-      // compute
-      //
-      // p' = p + s * dir;
-      //
-      glm::vec3 intersectPoint = origin + distance * mouseDir;
+    glm::intersectRayPlane(origin, mouse_direction, plane_origin, plane_normal,
+                           distance);
 
-      // Now position the lander's origin at that intersection point
-      glm::vec3 min = lander_.getSceneMin();
-      glm::vec3 max = lander_.getSceneMax();
-      float offset = (max.y - min.y) / 2.0;
-      lander_.setPosition(intersectPoint.x, intersectPoint.y - offset,
-                          intersectPoint.z);
+    // find the point of intersection on the plane. compute using parametric
+    // representation of a line: p' = p + s * dir;
+    const auto intersection_point{origin + distance * mouse_direction};
 
-      // set up bounding box for lander while we are at it
-      lander_bounds_ =
-          Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
-    }
+    const auto min_lander_bounds{lander_.getSceneMin()};
+    const auto max_lander_bounds{lander_.getSceneMax()};
+    lander_bounds_ = Box(min_lander_bounds, max_lander_bounds);
+
+    const auto offset{(max_lander_bounds.y - min_lander_bounds.y) / 2.0f};
+    lander_.setPosition(intersection_point.x, intersection_point.y - offset,
+                        intersection_point.z);
   }
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg) {}
 
-//--------------------------------------------------------------
-bool ofApp::mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm,
-                                glm::vec3& point) {
-  ofVec2f mouse(mouseX, mouseY);
-  ofVec3f rayPoint = cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
-  ofVec3f rayDir = rayPoint - cam_.getPosition();
-  rayDir.normalize();
+////--------------------------------------------------------------
+// bool ofApp::MouseIntersectPlane(const glm::vec3& plane_point,
+//                                const glm::vec3& plane_normal,
+//                                glm::vec3& intersection_point) {
+//  const auto ray_origin{cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0.0f))};
+//  const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
+//
+//  return Utility::RayIntersectPlane(ray_origin, ray_direction, plane_point,
+//                                    plane_normal, intersection_point);
+//}
 
-  return (RayIntersectPlane(rayPoint, rayDir, planePoint, planeNorm, point));
-}
-
 //--------------------------------------------------------------
-void ofApp::setCameraTarget() {
+void ofApp::SetCameraTarget() {
   // Set the camera to use the selected point as it's new target
 }
