@@ -67,14 +67,14 @@ void ofApp::draw() {
   ofPushMatrix();
 
   if (terrain_selected_) {
-    draw_axis(glm::vec3(0.0f));
+    DrawAxis(glm::vec3(0.0f));
   } else {
-    draw_axis(lander_.getPosition());
+    DrawAxis(lander_.getPosition());
   }
 
   if (wireframe_enabled_) {
     ofDisableLighting();
-    draw_wireframes();
+    DrawWireframes();
   } else {
     ofEnableLighting();
     mars_.drawFaces();
@@ -82,27 +82,27 @@ void ofApp::draw() {
     if (lander_loaded_) {
       lander_.drawFaces();
 
-      if (lander_bounding_boxes_displayed_) draw_lander_bounding_boxes();
+      if (lander_bounding_boxes_displayed_) DrawLanderBoundingBoxes();
 
       if (lander_selected_) {
-        draw_lander_bounds();
-        draw_lander_collision_boxes();
+        DrawLanderBounds();
+        DrawLanderCollisionBoxes();
       }
     }
   }
 
-  if (terrain_points_displayed_) draw_terrain_points();
+  if (terrain_points_displayed_) DrawTerrainPoints();
 
-  if (point_selected_) draw_point_selected();
+  if (point_selected_) DrawPointSelected();
 
-  if (octree_displayed_) draw_octree();
+  if (octree_displayed_) DrawOctree();
 
   ofPopMatrix();
   cam_.end();
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_wireframes() {
+void ofApp::DrawWireframes() {
   ofSetColor(ofColor::slateGray);
 
   mars_.drawWireframe();
@@ -113,7 +113,7 @@ void ofApp::draw_wireframes() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_axis(const glm::vec3& location) {
+void ofApp::DrawAxis(const glm::vec3& location) {
   // Draw an XYZ axis in RGB at world (0,0,0) for reference.
   ofSetLineWidth(1.0);
 
@@ -136,7 +136,7 @@ void ofApp::draw_axis(const glm::vec3& location) {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_lander_bounding_boxes() {
+void ofApp::DrawLanderBoundingBoxes() {
   ofPushMatrix();
   ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
@@ -150,7 +150,7 @@ void ofApp::draw_lander_bounding_boxes() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_lander_bounds() {
+void ofApp::DrawLanderBounds() {
   ofPushMatrix();
   ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
@@ -160,7 +160,7 @@ void ofApp::draw_lander_bounds() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_lander_collision_boxes() {
+void ofApp::DrawLanderCollisionBoxes() {
   ofPushMatrix();
   ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
@@ -174,14 +174,14 @@ void ofApp::draw_lander_collision_boxes() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_terrain_points() {
+void ofApp::DrawTerrainPoints() {
   glPointSize(3.0f);
   ofSetColor(ofColor::green);
   mars_.drawVertices();
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_point_selected() {
+void ofApp::DrawPointSelected() {
   const auto point = octree_.mesh_.getVertex(selected_node_.points_[0]);
   const auto direction = point - cam_.getPosition();
   ofSetColor(ofColor::green);
@@ -189,7 +189,7 @@ void ofApp::draw_point_selected() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw_octree() {
+void ofApp::DrawOctree() {
   ofDisableLighting();
 
   if (leaf_nodes_displayed_) {

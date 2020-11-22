@@ -25,14 +25,14 @@ class ofApp : public ofBaseApp {
   void update() override;
 
   void draw() override;
-  void draw_wireframes();
-  void draw_axis(const glm::vec3& location);
-  void draw_lander_bounding_boxes();
-  void draw_lander_bounds();
-  void draw_lander_collision_boxes();
-  void draw_terrain_points();
-  void draw_point_selected();
-  void draw_octree();
+  void DrawWireframes();
+  void DrawAxis(const glm::vec3& location);
+  void DrawLanderBoundingBoxes();
+  void DrawLanderBounds();
+  void DrawLanderCollisionBoxes();
+  void DrawTerrainPoints();
+  void DrawPointSelected();
+  void DrawOctree();
 
   void keyPressed(int key) override;
   void SavePicture();
