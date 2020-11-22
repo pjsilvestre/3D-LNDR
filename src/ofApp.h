@@ -22,10 +22,17 @@ class ofApp : public ofBaseApp {
   void setup() override;
   static void InitializeLighting();
 
-  void update();
+  void update() override;
 
-  void draw();
-  void drawAxis(ofVec3f);
+  void draw() override;
+  void draw_wireframes();
+  void draw_axis(const glm::vec3& location);
+  void draw_lander_bounding_boxes();
+  void draw_lander_bounds();
+  void draw_lander_collision_boxes();
+  void draw_terrain_points();
+  void draw_point_selected();
+  void draw_octree();
 
   void keyPressed(int key);
   void savePicture();
@@ -63,15 +70,15 @@ class ofApp : public ofBaseApp {
 
   bool lander_loaded_{false};
   bool lander_selected_{false};
-  bool terrain_selected_{false};
+  bool terrain_selected_{true};
   bool point_selected_{false};
 
-  bool gui_hidden_{false};
+  bool gui_displayed_{true};
   bool wireframe_enabled_{false};
-  bool points_displayed_{false};
+  bool terrain_points_displayed_{false};
   bool leaf_nodes_displayed_{false};
   bool octree_displayed_{false};
-  bool bounding_boxes_displayed_{false};
+  bool lander_bounding_boxes_displayed_{false};
 
   ofEasyCam cam_;
   ofxAssimpModelLoader mars_;
@@ -88,8 +95,8 @@ class ofApp : public ofBaseApp {
 
   Box bounding_box_;
   Box lander_bounds_;
-  vector<Box> collision_boxes_;
-  vector<Box> bounding_boxes_;
+  vector<Box> lander_bounding_boxes_;
+  vector<Box> lander_collision_boxes_;
 
   TreeNode selected_node_;
   Octree octree_;

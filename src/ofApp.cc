@@ -60,120 +60,149 @@ void ofApp::draw() {
   ofBackground(ofColor::black);
 
   glDepthMask(false);
-  if (!gui_hidden_) gui_.draw();
+  if (gui_displayed_) gui_.draw();
   glDepthMask(true);
 
   cam_.begin();
   ofPushMatrix();
-  if (wireframe_enabled_) {  // wireframe mode  (include axis)
-    ofDisableLighting();
-    ofSetColor(ofColor::slateGray);
-    mars_.drawWireframe();
 
-    if (lander_loaded_) {
-      lander_.drawWireframe();
-      if (!terrain_selected_) drawAxis(lander_.getPosition());
-    }
-
-    if (terrain_selected_) drawAxis(ofVec3f(0, 0, 0));
+  if (terrain_selected_) {
+    draw_axis(glm::vec3(0.0f));
   } else {
-    ofEnableLighting();  // shaded mode
+    draw_axis(lander_.getPosition());
+  }
+
+  if (wireframe_enabled_) {
+    ofDisableLighting();
+    draw_wireframes();
+  } else {
+    ofEnableLighting();
     mars_.drawFaces();
-    ofMesh mesh;
 
     if (lander_loaded_) {
       lander_.drawFaces();
 
-      if (!terrain_selected_) drawAxis(lander_.getPosition());
-
-      if (bounding_boxes_displayed_) {
-        ofNoFill();
-        ofSetColor(ofColor::white);
-
-        for (int i = 0; i < lander_.getNumMeshes(); i++) {
-          ofPushMatrix();
-          ofMultMatrix(lander_.getModelMatrix());
-          ofRotate(-90, 1, 0, 0);
-          (bounding_boxes_[i].draw());
-          ofPopMatrix();
-        }
-      }
+      if (lander_bounding_boxes_displayed_) draw_lander_bounding_boxes();
 
       if (lander_selected_) {
-        ofVec3f min = lander_.getSceneMin() + lander_.getPosition();
-        ofVec3f max = lander_.getSceneMax() + lander_.getPosition();
-
-        Box bounds =
-            Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
-        ofSetColor(ofColor::white);
-        bounds.draw();
-
-        // draw colliding boxes
-        ofSetColor(ofColor::lightBlue);
-
-        for (int i = 0; i < collision_boxes_.size(); i++) {
-          collision_boxes_[i].draw();
-        }
+        draw_lander_bounds();
+        draw_lander_collision_boxes();
       }
     }
   }
 
-  if (terrain_selected_) drawAxis(ofVec3f(0, 0, 0));
+  if (terrain_points_displayed_) draw_terrain_points();
 
-  if (points_displayed_) {  // display points as an option
-    glPointSize(3);
-    ofSetColor(ofColor::green);
-    mars_.drawVertices();
-  }
+  if (point_selected_) draw_point_selected();
 
-  // recursively draw octree
-  ofDisableLighting();
-  int level = 0;
-  // ofNoFill()
-
-  if (leaf_nodes_displayed_) {
-    octree_.drawLeafNodes(octree_.root_);
-    cout << "num leaf: " << octree_.number_of_leaves_ << endl;
-  } else if (octree_displayed_) {
-    ofNoFill();
-    ofSetColor(ofColor::white);
-    octree_.draw(num_octree_levels_, 0);
-  }
-
-  // if point selected, draw a sphere
-  //
-  if (point_selected_) {
-    ofVec3f p = octree_.mesh_.getVertex(selected_node_.points_[0]);
-    ofVec3f d = p - cam_.getPosition();
-    ofSetColor(ofColor::lightGreen);
-    ofDrawSphere(p, .02 * d.length());
-  }
+  if (octree_displayed_) draw_octree();
 
   ofPopMatrix();
   cam_.end();
 }
 
 //--------------------------------------------------------------
-void ofApp::drawAxis(ofVec3f location) {
+void ofApp::draw_wireframes() {
+  ofSetColor(ofColor::slateGray);
+
+  mars_.drawWireframe();
+
+  if (lander_loaded_) {
+    lander_.drawWireframe();
+  }
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_axis(const glm::vec3& location) {
   // Draw an XYZ axis in RGB at world (0,0,0) for reference.
+  ofSetLineWidth(1.0);
+
   ofPushMatrix();
   ofTranslate(location);
 
-  ofSetLineWidth(1.0);
+  // x-axis
+  ofSetColor(ofColor::red);
+  ofDrawLine(glm::vec3(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-  // X Axis
-  ofSetColor(ofColor(255, 0, 0));
-  ofDrawLine(ofPoint(0, 0, 0), ofPoint(1, 0, 0));
+  // y-axis
+  ofSetColor(ofColor::green);
+  ofDrawLine(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-  // Y Axis
-  ofSetColor(ofColor(0, 255, 0));
-  ofDrawLine(ofPoint(0, 0, 0), ofPoint(0, 1, 0));
-
-  // Z Axis
-  ofSetColor(ofColor(0, 0, 255));
-  ofDrawLine(ofPoint(0, 0, 0), ofPoint(0, 0, 1));
+  // z-axis
+  ofSetColor(ofColor::blue);
+  ofDrawLine(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_lander_bounding_boxes() {
+  ofPushMatrix();
+  ofMultMatrix(lander_.getModelMatrix());
+  ofNoFill();
+  ofSetColor(ofColor::white);
+
+  for (auto& box : lander_bounding_boxes_) {
+    box.draw();
+  }
+
+  ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_lander_bounds() {
+  ofPushMatrix();
+  ofMultMatrix(lander_.getModelMatrix());
+  ofNoFill();
+  ofSetColor(ofColor::white);
+  lander_bounds_.draw();
+  ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_lander_collision_boxes() {
+  ofPushMatrix();
+  ofMultMatrix(lander_.getModelMatrix());
+  ofNoFill();
+  ofSetColor(ofColor::lightBlue);
+
+  for (const auto& box : lander_collision_boxes_) {
+    box.draw();
+  }
+
+  ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_terrain_points() {
+  glPointSize(3.0f);
+  ofSetColor(ofColor::green);
+  mars_.drawVertices();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_point_selected() {
+  const auto point = octree_.mesh_.getVertex(selected_node_.points_[0]);
+  const auto direction = point - cam_.getPosition();
+  ofSetColor(ofColor::green);
+  ofDrawSphere(point, .02f * glm::length(direction));
+}
+
+//--------------------------------------------------------------
+void ofApp::draw_octree() {
+  ofDisableLighting();
+
+  if (leaf_nodes_displayed_) {
+    // octree_.drawLeafNodes(octree_.root_);
+    // cout << "number of leaf nodes: " << octree_.number_of_leaves_ << endl;
+    cerr << "leaf_nodes_displayed_ not implemented" << endl;
+  } else {
+    ofNoFill();
+    ofSetColor(ofColor::white);
+    octree_.draw(num_octree_levels_, 0);
+  }
+
+  ofEnableLighting();
 }
 
 //--------------------------------------------------------------
@@ -181,7 +210,7 @@ void ofApp::keyPressed(int key) {
   switch (key) {
     case 'B':
     case 'b':
-      bounding_boxes_displayed_ = !bounding_boxes_displayed_;
+      lander_bounding_boxes_displayed_ = !lander_bounding_boxes_displayed_;
       break;
     case 'C':
     case 'c':
@@ -196,6 +225,7 @@ void ofApp::keyPressed(int key) {
       break;
     case 'H':
     case 'h':
+      gui_displayed_ = !gui_displayed_;
       break;
     case 'L':
     case 'l':
@@ -249,7 +279,9 @@ void ofApp::savePicture() {
 }
 
 //--------------------------------------------------------------
-void ofApp::togglePointsDisplay() { points_displayed_ = !points_displayed_; }
+void ofApp::togglePointsDisplay() {
+  terrain_points_displayed_ = !terrain_points_displayed_;
+}
 
 //--------------------------------------------------------------
 void ofApp::toggleWireframeMode() { wireframe_enabled_ = !wireframe_enabled_; }
@@ -298,8 +330,8 @@ void ofApp::mouseDragged(int x, int y, int button) {
     Box bounds =
         Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
 
-    collision_boxes_.clear();
-    octree_.intersect(bounds, octree_.root_, collision_boxes_);
+    lander_collision_boxes_.clear();
+    octree_.intersect(bounds, octree_.root_, lander_collision_boxes_);
   } else {
     ofVec3f p;
     raySelectWithOctree(p);
@@ -371,12 +403,14 @@ void ofApp::mousePressed(int x, int y, int button) {
 
     if (hit) {
       lander_selected_ = true;
+      terrain_selected_ = false;
       mouse_down_pos_ =
           getMousePointOnPlane(lander_.getPosition(), cam_.getZAxis());
       mouse_last_pos_ = mouse_down_pos_;
       dragging_ = true;
     } else {
       lander_selected_ = false;
+      terrain_selected_ = true;
     }
   } else {
     ofVec3f p;
@@ -406,10 +440,11 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
     lander_.setScaleNormalization(false);
     lander_.setPosition(0, 0, 0);
     cout << "number of meshes: " << lander_.getNumMeshes() << endl;
-    bounding_boxes_.clear();
+    lander_bounding_boxes_.clear();
 
     for (int i = 0; i < lander_.getMeshCount(); i++) {
-      bounding_boxes_.push_back(Box::getMeshBoundingBox(lander_.getMesh(i)));
+      lander_bounding_boxes_.push_back(
+          Box::getMeshBoundingBox(lander_.getMesh(i)));
     }
 
     // lander_.setRotation(1, 180, 1, 0, 0);
