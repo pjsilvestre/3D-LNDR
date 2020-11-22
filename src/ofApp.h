@@ -57,43 +57,41 @@ class ofApp : public ofBaseApp {
                            glm::vec3& point);
   void setCameraTarget();
 
-  bool bAltKeyDown;
-  bool bCtrlKeyDown;
-  bool bInDrag = false;
-  bool bWireframe;
-  bool bDisplayPoints;
-  bool bPointSelected;
-  bool bHide;
-  bool pointSelected = false;
-  bool bDisplayLeafNodes = false;
-  bool bDisplayOctree = false;
-  bool bDisplayBBoxes = false;
+  bool alt_key_down_{false};
+  bool ctrl_key_down_{false};
+  bool dragging_{false};
 
-  bool bLanderLoaded;
-  bool bLanderSelected = false;
-  bool bTerrainSelected;
+  bool lander_loaded_{false};
+  bool lander_selected_{false};
+  bool terrain_selected_{false};
+  bool point_selected_{false};
 
-  const float selectionRange = 4.0;
+  bool gui_hidden_{false};
+  bool wireframe_enabled_{false};
+  bool points_displayed_{false};
+  bool leaf_nodes_displayed_{false};
+  bool octree_displayed_{false};
+  bool bounding_boxes_displayed_{false};
 
-  ofEasyCam cam;
-  ofxAssimpModelLoader mars;
-  ofxAssimpModelLoader lander;
-  ofLight light;
+  ofEasyCam cam_;
+  ofxAssimpModelLoader mars_;
+  ofxAssimpModelLoader lander_;
+  ofLight light_;
 
-  ofxIntSlider numLevels;
-  ofxPanel gui;
+  ofxIntSlider num_octree_levels_;
+  ofxPanel gui_;
 
-  ofVec3f selectedPoint;
-  ofVec3f intersectPoint;
-  glm::vec3 mouseDownPos;
-  glm::vec3 mouseLastPos;
+  ofVec3f selected_point_;
+  ofVec3f intersect_point_;
+  glm::vec3 mouse_down_pos_;
+  glm::vec3 mouse_last_pos_;
 
-  Box boundingBox;
-  Box landerBounds;
-  Box testBox;
-  vector<Box> colBoxList;
-  vector<Box> bboxList;
+  Box bounding_box_;
+  Box lander_bounds_;
+  Box test_box_;
+  vector<Box> collision_boxes_;
+  vector<Box> bounding_boxes_;
 
-  TreeNode selectedNode;
-  Octree octree;
+  TreeNode selected_node_;
+  Octree octree_;
 };
