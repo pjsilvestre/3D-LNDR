@@ -22,19 +22,18 @@ class Octree {
  public:
   Octree() = default;
   Octree(const ofMesh &mesh, int num_levels);
-  void subdivide(const ofMesh &mesh, TreeNode &node, int num_levels,
+
+  void Subdivide(const ofMesh &mesh, TreeNode &node, int num_levels,
                  int current_level);
-  static vector<Box> SubdivideBox8(const Box &box);
-  static vector<int> GetMeshFacesInBox(const ofMesh &mesh,
-                                       const vector<int> &faces,
-                                       const Box &box);
-  static vector<int> GetMeshPointsInBox(const ofMesh &mesh,
-                                        const vector<int> &points,
-                                        const Box &box);
-  void draw(int num_levels, int current_level) const;
-  void drawLeafNodes(const TreeNode &node);
-  bool intersect(const Box &, TreeNode &node, vector<Box> &box_list_rtn);
-  bool intersect(const Ray &, const TreeNode &node, TreeNode &node_rtn);
+  vector<Box> SubdivideBox8(const Box &box);
+  vector<int> GetMeshFacesInBox(const ofMesh &mesh, const vector<int> &faces,
+                                const Box &box);
+  vector<int> GetMeshPointsInBox(const ofMesh &mesh, const vector<int> &points,
+                                 const Box &box);
+  void Draw(int num_levels, int current_level) const;
+  void DrawLeafNodes(const TreeNode &node);
+  bool Intersect(const Box &, TreeNode &node, vector<Box> &box_list_rtn);
+  bool Intersect(const Ray &, const TreeNode &node, TreeNode &node_rtn);
 
   ofMesh mesh_;
   TreeNode root_;
@@ -44,5 +43,5 @@ class Octree {
   int number_of_leaves_{0};
 
  private:
-  void draw(const TreeNode &node, int num_levels, int current_level) const;
+  void Draw(const TreeNode &node, int num_levels, int current_level) const;
 };

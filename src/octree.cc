@@ -19,7 +19,7 @@ Octree::Octree(const ofMesh &mesh, const int num_levels) {
   }
 
   level++;
-  subdivide(mesh, root_, num_levels, level);
+  Subdivide(mesh, root_, num_levels, level);
 }
 
 /**
@@ -29,7 +29,7 @@ Octree::Octree(const ofMesh &mesh, const int num_levels) {
  * @param num_levels The total number of Octree level divisions
  * @param current_level The current Octree level division
  */
-void Octree::subdivide(const ofMesh &mesh, TreeNode &node, const int num_levels,
+void Octree::Subdivide(const ofMesh &mesh, TreeNode &node, const int num_levels,
                        int current_level) {
   if (current_level >= num_levels) return;
 
@@ -54,7 +54,7 @@ void Octree::subdivide(const ofMesh &mesh, TreeNode &node, const int num_levels,
       node.children_nodes_.push_back(child);
 
       if (count > 1) {
-        subdivide(mesh, node.children_nodes_.back(), num_levels, current_level);
+        Subdivide(mesh, node.children_nodes_.back(), num_levels, current_level);
       }
     }
   }
@@ -161,15 +161,15 @@ vector<int> Octree::GetMeshPointsInBox(const ofMesh &mesh,
  * @param num_levels The total number of Octree level divisions
  * @param current_level The current Octree level division
  */
-void Octree::draw(const int num_levels, const int current_level) const {
-  draw(root_, num_levels, current_level);
+void Octree::Draw(const int num_levels, const int current_level) const {
+  Draw(root_, num_levels, current_level);
 }
 
 /**
  * @brief Draws only this Octree's leaf nodes
  * @param node TODO
  */
-void Octree::drawLeafNodes(const TreeNode &node) {
+void Octree::DrawLeafNodes(const TreeNode &node) {
   // TODO optional
 }
 
@@ -180,7 +180,7 @@ void Octree::drawLeafNodes(const TreeNode &node) {
  * @param box_list_rtn TODO
  * @return TODO
  */
-bool Octree::intersect(const Box &box, TreeNode &node,
+bool Octree::Intersect(const Box &box, TreeNode &node,
                        vector<Box> &box_list_rtn) {
   // TODO
   auto intersects = false;
@@ -196,7 +196,7 @@ bool Octree::intersect(const Box &box, TreeNode &node,
  * @param node_rtn (SIDE EFFECT RETURN VALUE) The final, intersected leaf node
  * @return True if the ray intersects the Octree, false otherwise
  */
-bool Octree::intersect(const Ray &ray, const TreeNode &node,
+bool Octree::Intersect(const Ray &ray, const TreeNode &node,
                        TreeNode &node_rtn) {
   // FIXME not all control paths return a value
 
@@ -207,7 +207,7 @@ bool Octree::intersect(const Ray &ray, const TreeNode &node,
     }
 
     for (const auto &child : node.children_nodes_) {
-      intersect(ray, child, node_rtn);
+      Intersect(ray, child, node_rtn);
     }
 
   } else {
@@ -216,7 +216,7 @@ bool Octree::intersect(const Ray &ray, const TreeNode &node,
 }
 
 //-Private Methods----------------------------------------------
-void Octree::draw(const TreeNode &node, const int num_levels,
+void Octree::Draw(const TreeNode &node, const int num_levels,
                   int current_level) const {
   if (current_level >= num_levels) return;
 
@@ -224,6 +224,6 @@ void Octree::draw(const TreeNode &node, const int num_levels,
   node.box_.Draw();
 
   for (const auto &child : node.children_nodes_) {
-    draw(child, num_levels, current_level);
+    Draw(child, num_levels, current_level);
   }
 }

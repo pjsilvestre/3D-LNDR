@@ -199,7 +199,7 @@ void ofApp::DrawOctree() {
   } else {
     ofNoFill();
     ofSetColor(ofColor::white);
-    octree_.draw(num_octree_levels_, 0);
+    octree_.Draw(num_octree_levels_, 0);
   }
 
   ofEnableLighting();
@@ -340,7 +340,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
         Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
 
     lander_collision_boxes_.clear();
-    octree_.intersect(bounds, octree_.root_, lander_collision_boxes_);
+    octree_.Intersect(bounds, octree_.root_, lander_collision_boxes_);
   } else {
     ofVec3f p;
     raySelectWithOctree(p);
@@ -383,7 +383,7 @@ bool ofApp::raySelectWithOctree(ofVec3f& pointRet) {
   rayDir.normalize();
   Ray ray = Ray(rayPoint, rayDir);
 
-  point_selected_ = octree_.intersect(ray, octree_.root_, selected_node_);
+  point_selected_ = octree_.Intersect(ray, octree_.root_, selected_node_);
 
   if (point_selected_) {
     pointRet = octree_.mesh_.getVertex(selected_node_.points_[0]);
