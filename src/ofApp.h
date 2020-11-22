@@ -90,8 +90,6 @@ class ofApp : public ofBaseApp {
   ofxIntSlider num_octree_levels_;
   ofxPanel gui_;
 
-  ofVec3f selected_point_;
-  ofVec3f intersect_point_;
   glm::vec3 mouse_last_pos_;
 
   Box lander_bounds_;

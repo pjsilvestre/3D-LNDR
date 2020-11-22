@@ -32,9 +32,10 @@ class Octree {
                                  const Box& box);
   void Draw(int num_levels, int current_level) const;
   void DrawLeafNodes(const TreeNode& node);
-  bool Intersect(const Box& box, const TreeNode& node,
-                 vector<Box>& terrain_collision_boxes);
-  bool Intersect(const Ray& ray, const TreeNode& node, TreeNode& node_rtn);
+  bool Intersect(const Box& box, const TreeNode& current_node,
+                 vector<Box>& terrain_collision_boxes) const;
+  bool Intersect(const Ray& ray, const TreeNode& current_node,
+                 TreeNode& collision_node) const;
 
   ofMesh mesh_;
   TreeNode root_;

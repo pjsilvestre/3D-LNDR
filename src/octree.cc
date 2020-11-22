@@ -177,56 +177,54 @@ void Octree::DrawLeafNodes(const TreeNode& node) {
  * @brief Determines which leaf nodes in this Octree are intersected by a given
  * Box
  * @param box The Box potentially intersecting this Octree
- * @param node The current node being checked for intersection, which may or may
- * not have chldren nodes
+ * @param current_node The current node being checked for intersection, which
+ * may or may not have children nodes
  * @param terrain_collision_boxes (SIDE EFFECT RETURN VALUE) The final,
  * intersected leaf nodes
  * @return True if the Box intersects this Octree, false otherwise
  */
-bool Octree::Intersect(const Box& box, const TreeNode& node,
-                       vector<Box>& terrain_collision_boxes) {
-  // FIXME not all control paths return a value
-
-  if (node.box_.Overlap(box)) {
-    if (node.children_nodes_.empty()) {
-      terrain_collision_boxes.push_back(node.box_);
-      return true;
+bool Octree::Intersect(const Box& box, const TreeNode& current_node,
+                       vector<Box>& terrain_collision_boxes) const {
+  if (current_node.box_.Overlap(box)) {
+    if (current_node.children_nodes_.empty()) {
+      terrain_collision_boxes.push_back(current_node.box_);
     }
 
-    for (const auto& child : node.children_nodes_) {
+    for (const auto& child : current_node.children_nodes_) {
       Intersect(box, child, terrain_collision_boxes);
     }
-  } else {
-    return false;
+
+    return true;
   }
+
+  return false;
 }
 
 /**
  * @brief Determines which leaf node in this Octree is intersected by a given
  * ray
  * @param ray The ray potentially intersecting this Octree
- * @param node The current node being checked for intersection, which may or may
- * not have children nodes
- * @param node_rtn (SIDE EFFECT RETURN VALUE) The final, intersected leaf node
+ * @param current_node The current node being checked for intersection, which
+ * may or may not have children nodes
+ * @param collision_node (SIDE EFFECT RETURN VALUE) The final, intersected leaf
+ * node
  * @return True if the ray intersects the Octree, false otherwise
  */
-bool Octree::Intersect(const Ray& ray, const TreeNode& node,
-                       TreeNode& node_rtn) {
-  // FIXME not all control paths return a value
-
-  if (node.box_.Intersect(ray, -1000, 1000)) {
-    if (node.children_nodes_.empty()) {
-      node_rtn = node;
-      return true;
+bool Octree::Intersect(const Ray& ray, const TreeNode& current_node,
+                       TreeNode& collision_node) const {
+  if (current_node.box_.Intersect(ray, 0, 10000)) {
+    if (current_node.children_nodes_.empty()) {
+      collision_node = current_node;
     }
 
-    for (const auto& child : node.children_nodes_) {
-      Intersect(ray, child, node_rtn);
+    for (const auto& child : current_node.children_nodes_) {
+      Intersect(ray, child, collision_node);
     }
 
-  } else {
-    return false;
+    return true;
   }
+
+  return false;
 }
 
 //-Private Methods----------------------------------------------
