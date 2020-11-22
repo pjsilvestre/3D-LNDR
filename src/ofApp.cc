@@ -24,7 +24,14 @@ void ofApp::setup() {
   gui_.add(num_octree_levels_.setup("Number of Octree Levels", 1, 1,
                                     max_num_octree_levels));
 
+  cout << "creating octree..." << endl;
+  const auto octree_creation_start{ofGetElapsedTimeMillis()};
   octree_ = Octree(mars_.getMesh(0), max_num_octree_levels);
+  const auto octree_creation_finish{ofGetElapsedTimeMillis()};
+  const auto octree_creation_time =
+      octree_creation_finish - octree_creation_start;
+  cout << "octree created in " << octree_creation_time << "ms ("
+       << octree_creation_time / 1000.0f << "s)" << endl;
   cout << "number of terrain vertices: " << mars_.getMesh(0).getNumVertices()
        << endl;
 }
@@ -163,9 +170,9 @@ void ofApp::DrawLanderCollisionBoxes() {
   ofPushMatrix();
   ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
-  ofSetColor(ofColor::lightBlue);
+  ofSetColor(ofColor::blue);
 
-  for (const auto& box : lander_collision_boxes_) {
+  for (const auto& box : terrain_collision_boxes_) {
     box.Draw();
   }
 
@@ -339,8 +346,8 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
     lander_bounds_ = new_lander_bounds;
 
-    lander_collision_boxes_.clear();
-    octree_.Intersect(lander_bounds_, octree_.root_, lander_collision_boxes_);
+    terrain_collision_boxes_.clear();
+    octree_.Intersect(lander_bounds_, octree_.root_, terrain_collision_boxes_);
   } else {
     glm::vec3 unused_point;
     SelectOctreeNode(unused_point);
@@ -380,10 +387,15 @@ bool ofApp::SelectOctreeNode(glm::vec3& return_point) {
   const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
   const auto mouse_ray{Ray(ray_origin, ray_direction)};
 
+  const auto before_point_selected = ofGetElapsedTimeMillis();
   point_selected_ = octree_.Intersect(mouse_ray, octree_.root_, selected_node_);
+  const auto after_point_selected = ofGetElapsedTimeMillis();
+  const auto selection_time = after_point_selected - before_point_selected;
 
   if (point_selected_) {
     return_point = octree_.mesh_.getVertex(selected_node_.points_[0]);
+    cout << "point selected in " << selection_time << "ms ("
+         << selection_time / 1000.0f << "s)" << endl;
   }
 
   return point_selected_;
@@ -489,16 +501,16 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg) {}
 
-////--------------------------------------------------------------
-// bool ofApp::MouseIntersectPlane(const glm::vec3& plane_point,
-//                                const glm::vec3& plane_normal,
-//                                glm::vec3& intersection_point) {
-//  const auto ray_origin{cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0.0f))};
-//  const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
-//
-//  return Utility::RayIntersectPlane(ray_origin, ray_direction, plane_point,
-//                                    plane_normal, intersection_point);
-//}
+//--------------------------------------------------------------
+bool ofApp::MouseIntersectPlane(const glm::vec3& plane_point,
+                                const glm::vec3& plane_normal,
+                                glm::vec3& intersection_point) {
+  const auto ray_origin{cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0.0f))};
+  const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
+
+  return Utility::RayIntersectPlane(ray_origin, ray_direction, plane_point,
+                                    plane_normal, intersection_point);
+}
 
 //--------------------------------------------------------------
 void ofApp::SetCameraTarget() {

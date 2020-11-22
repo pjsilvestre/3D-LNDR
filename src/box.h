@@ -17,19 +17,19 @@
 class Box {
  public:
   Box() = default;
-  Box(const glm::vec3 &min, const glm::vec3 &max);
+  Box(const glm::vec3& min, const glm::vec3& max);
 
   glm::vec3 min() const { return corners_[0]; }
   glm::vec3 max() const { return corners_[1]; }
 
   glm::vec3 Center() const;
   void Draw() const;
-  bool Intersect(const Ray &ray, float z_buffer_min, float z_buffer_max) const;
-  bool Inside(const glm::vec3 &point) const;
-  bool Inside(const std::vector<glm::vec3> &points) const;
-  bool Overlap(const Box &box);
+  bool Intersect(const Ray& ray, float z_buffer_min, float z_buffer_max) const;
+  bool Inside(const glm::vec3& point) const;
+  bool Inside(const std::vector<glm::vec3>& points) const;
+  bool Overlap(const Box& other_box) const;
 
-  static Box CreateMeshBoundingBox(const ofMesh &mesh);
+  static Box CreateMeshBoundingBox(const ofMesh& mesh);
 
  private:
   glm::vec3 corners_[2];

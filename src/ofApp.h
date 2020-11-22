@@ -61,8 +61,9 @@ class ofApp : public ofBaseApp {
 
   void gotMessage(ofMessage msg) override;
 
-  //bool MouseIntersectPlane(const glm::vec3& plane_point, const glm::vec3& plane_normal,
-  //                         glm::vec3& intersection_point);
+  bool MouseIntersectPlane(const glm::vec3& plane_point,
+                           const glm::vec3& plane_normal,
+                           glm::vec3& intersection_point);
   void SetCameraTarget();
 
   bool alt_key_down_{false};
@@ -95,7 +96,7 @@ class ofApp : public ofBaseApp {
 
   Box lander_bounds_;
   vector<Box> lander_bounding_boxes_;
-  vector<Box> lander_collision_boxes_;
+  vector<Box> terrain_collision_boxes_;
 
   TreeNode selected_node_;
   Octree octree_;

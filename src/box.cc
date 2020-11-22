@@ -5,7 +5,7 @@
  * @param min The desired minimum corner
  * @param max The desired maximum corner
  */
-Box::Box(const glm::vec3 &min, const glm::vec3 &max) : corners_{min, max} {}
+Box::Box(const glm::vec3& min, const glm::vec3& max) : corners_{min, max} {}
 
 /**
  * @brief Gets the center of this Box
@@ -24,8 +24,8 @@ glm::vec3 Box::Center() const {
  * @brief Draws this Box's wireframe
  */
 void Box::Draw() const {
-  const auto &min_corner = corners_[0];
-  const auto &max_corner = corners_[1];
+  const auto& min_corner = corners_[0];
+  const auto& max_corner = corners_[1];
   const auto size = max_corner - min_corner;
   const auto center = size / 2 + min_corner;
 
@@ -38,7 +38,7 @@ void Box::Draw() const {
  * @param point The point to test
  * @return True if the point is within this Box, false otherwise
  */
-bool Box::Inside(const glm::vec3 &point) const {
+bool Box::Inside(const glm::vec3& point) const {
   return (point.x >= corners_[0].x && point.x <= corners_[1].x) &&
          (point.y >= corners_[0].y && point.y <= corners_[1].y) &&
          (point.z >= corners_[0].z && point.z <= corners_[1].z);
@@ -49,8 +49,8 @@ bool Box::Inside(const glm::vec3 &point) const {
  * @param points The points to test
  * @return True if the points are within this Box, false otherwise
  */
-bool Box::Inside(const std::vector<glm::vec3> &points) const {
-  for (const auto &point : points) {
+bool Box::Inside(const std::vector<glm::vec3>& points) const {
+  for (const auto& point : points) {
     if (!Inside(point)) {
       return false;
     }
@@ -71,7 +71,7 @@ bool Box::Inside(const std::vector<glm::vec3> &points) const {
  * @param z_buffer_max The maximum z-buffer distance for culling
  * @return True if the ray intersects this Box, false otherwise
  */
-bool Box::Intersect(const Ray &ray, const float z_buffer_min,
+bool Box::Intersect(const Ray& ray, const float z_buffer_min,
                     const float z_buffer_max) const {
   auto x_min =
       (corners_[ray.sign_[0]].x - ray.origin_.x) * ray.inverse_direction_.x;
@@ -102,12 +102,15 @@ bool Box::Intersect(const Ray &ray, const float z_buffer_min,
 
 /**
  * @brief Determines if this Box overlaps with another Box
- * @param box The other Box to check
+ * @param other_box The other Box to check
  * @return True if this Box overlaps the other Box, false otherwise
  */
-bool Box::Overlap(const Box &box) {
-  // TODO
-  return true;
+bool Box::Overlap(const Box& other_box) const {
+  if (glm::length(other_box.Center() - Center()) < 50) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -115,7 +118,7 @@ bool Box::Overlap(const Box &box) {
  * @param mesh The given mesh to bound
  * @return The mesh's bounding Box
  */
-Box Box::CreateMeshBoundingBox(const ofMesh &mesh) {
+Box Box::CreateMeshBoundingBox(const ofMesh& mesh) {
   // return a Mesh Bounding Box for the entire Mesh
   const auto num_vertices{mesh.getNumVertices()};
   const auto first_vertex = mesh.getVertex(0);
