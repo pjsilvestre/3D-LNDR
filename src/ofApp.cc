@@ -143,7 +143,7 @@ void ofApp::DrawLanderBoundingBoxes() {
   ofSetColor(ofColor::white);
 
   for (auto& box : lander_bounding_boxes_) {
-    box.draw();
+    box.Draw();
   }
 
   ofPopMatrix();
@@ -155,7 +155,7 @@ void ofApp::DrawLanderBounds() {
   ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
   ofSetColor(ofColor::white);
-  lander_bounds_.draw();
+  lander_bounds_.Draw();
   ofPopMatrix();
 }
 
@@ -167,7 +167,7 @@ void ofApp::DrawLanderCollisionBoxes() {
   ofSetColor(ofColor::lightBlue);
 
   for (const auto& box : lander_collision_boxes_) {
-    box.draw();
+    box.Draw();
   }
 
   ofPopMatrix();
@@ -408,7 +408,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
     Box bounds =
         Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
-    bool hit = bounds.intersect(Ray(origin, mouseDir), 0, 10000);
+    bool hit = bounds.Intersect(Ray(origin, mouseDir), 0, 10000);
 
     if (hit) {
       lander_selected_ = true;
@@ -453,7 +453,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 
     for (int i = 0; i < lander_.getMeshCount(); i++) {
       lander_bounding_boxes_.push_back(
-          Box::getMeshBoundingBox(lander_.getMesh(i)));
+          Box::CreateMeshBoundingBox(lander_.getMesh(i)));
     }
 
     // lander_.setRotation(1, 180, 1, 0, 0);

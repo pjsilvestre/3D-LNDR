@@ -7,7 +7,7 @@
  */
 Octree::Octree(const ofMesh &mesh, const int num_levels) {
   mesh_ = mesh;
-  root_.box_ = Box::getMeshBoundingBox(mesh);
+  root_.box_ = Box::CreateMeshBoundingBox(mesh);
   auto level{0};
 
   if (use_mesh_faces_) {
@@ -125,7 +125,7 @@ vector<int> Octree::GetMeshFacesInBox(const ofMesh &mesh,
     auto points = vector<glm::vec3>{
         mesh_face.getVertex(0), mesh_face.getVertex(1), mesh_face.getVertex(2)};
 
-    if (box.inside(points)) {
+    if (box.Inside(points)) {
       indices.push_back(face);
     }
   }
@@ -148,7 +148,7 @@ vector<int> Octree::GetMeshPointsInBox(const ofMesh &mesh,
   for (const auto &point : points) {
     auto vertex = mesh.getVertex(point);
 
-    if (box.inside(vertex)) {
+    if (box.Inside(vertex)) {
       indices.push_back(point);
     }
   }
@@ -200,7 +200,7 @@ bool Octree::intersect(const Ray &ray, const TreeNode &node,
                        TreeNode &node_rtn) {
   // FIXME not all control paths return a value
 
-  if (node.box_.intersect(ray, -1000, 1000)) {
+  if (node.box_.Intersect(ray, -1000, 1000)) {
     if (node.children_nodes_.empty()) {
       node_rtn = node;
       return true;
@@ -221,7 +221,7 @@ void Octree::draw(const TreeNode &node, const int num_levels,
   if (current_level >= num_levels) return;
 
   current_level++;
-  node.box_.draw();
+  node.box_.Draw();
 
   for (const auto &child : node.children_nodes_) {
     draw(child, num_levels, current_level);
