@@ -1,3 +1,6 @@
+// ReSharper disable CppMemberFunctionMayBeStatic
+// ReSharper disable CppMemberFunctionMayBeConst
+
 #include "ofApp.h"
 
 //--------------------------------------------------------------

@@ -42,23 +42,23 @@ class ofApp : public ofBaseApp {
 
   void keyReleased(int key) override;
 
-  void mouseMoved(int x, int y);
+  void mouseMoved(int x, int y) override;
 
-  void mouseDragged(int x, int y, int button);
+  void mouseDragged(int x, int y, int button) override;
   glm::vec3 getMousePointOnPlane(glm::vec3 p, glm::vec3 n);
   bool raySelectWithOctree(ofVec3f& pointRet);
 
-  void mousePressed(int x, int y, int button);
+  void mousePressed(int x, int y, int button) override;
 
-  void mouseReleased(int x, int y, int button);
+  void mouseReleased(int x, int y, int button) override;
 
-  void mouseEntered(int x, int y);
-  void mouseExited(int x, int y);
-  void windowResized(int w, int h);
+  void mouseEntered(int x, int y) override;
+  void mouseExited(int x, int y) override;
+  void windowResized(int w, int h) override;
 
-  void dragEvent(ofDragInfo dragInfo);
+  void dragEvent(ofDragInfo dragInfo) override;
 
-  void gotMessage(ofMessage msg);
+  void gotMessage(ofMessage msg) override;
 
   bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm,
                            glm::vec3& point);
