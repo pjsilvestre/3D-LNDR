@@ -206,7 +206,7 @@ void ofApp::draw_octree() {
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key) {
+void ofApp::keyPressed(const int key) {
   switch (key) {
     case 'B':
     case 'b':
@@ -214,10 +214,11 @@ void ofApp::keyPressed(int key) {
       break;
     case 'C':
     case 'c':
-      if (cam_.getMouseInputEnabled())
+      if (cam_.getMouseInputEnabled()) {
         cam_.disableMouseInput();
-      else
+      } else {
         cam_.enableMouseInput();
+      }
       break;
     case 'F':
     case 'f':
@@ -235,24 +236,28 @@ void ofApp::keyPressed(int key) {
     case 'o':
       octree_displayed_ = !octree_displayed_;
       break;
+    case 'R':
     case 'r':
       cam_.reset();
       break;
+    case 'S':
     case 's':
-      savePicture();
+      SavePicture();
       break;
+    case 'T':
     case 't':
       setCameraTarget();
       break;
+    case 'U':
     case 'u':
       break;
-    case 'v':
-      togglePointsDisplay();
-      break;
     case 'V':
+    case 'v':
+      TogglePointsDisplay();
       break;
+    case 'W':
     case 'w':
-      toggleWireframeMode();
+      ToggleWireframeMode();
       break;
     case OF_KEY_ALT:
       cam_.enableMouseInput();
@@ -271,26 +276,30 @@ void ofApp::keyPressed(int key) {
 }
 
 //--------------------------------------------------------------
-void ofApp::savePicture() {
+void ofApp::SavePicture() {
   ofImage picture;
   picture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
-  picture.save("screenshot.png");
-  cout << "picture saved" << endl;
+
+  if (picture.save("screenshot.png")) {
+    cout << "screenshot saved" << endl;
+  } else {
+    cerr << "screenshot not saved" << endl;
+  }
 }
 
 //--------------------------------------------------------------
-void ofApp::togglePointsDisplay() {
+void ofApp::TogglePointsDisplay() {
   terrain_points_displayed_ = !terrain_points_displayed_;
 }
 
 //--------------------------------------------------------------
-void ofApp::toggleWireframeMode() { wireframe_enabled_ = !wireframe_enabled_; }
-
-////--------------------------------------------------------------
-// void ofApp::toggleSelectTerrain() { terrain_selected_ = !terrain_selected_; }
+void ofApp::ToggleWireframeMode() { wireframe_enabled_ = !wireframe_enabled_; }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key) {
+void ofApp::ToggleSelectTerrain() { terrain_selected_ = !terrain_selected_; }
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(const int key) {
   switch (key) {
     case OF_KEY_ALT:
       cam_.disableMouseInput();

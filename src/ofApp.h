@@ -20,7 +20,7 @@
 class ofApp : public ofBaseApp {
  public:
   void setup() override;
-  static void InitializeLighting();
+  void InitializeLighting();
 
   void update() override;
 
@@ -34,13 +34,13 @@ class ofApp : public ofBaseApp {
   void draw_point_selected();
   void draw_octree();
 
-  void keyPressed(int key);
-  void savePicture();
-  void togglePointsDisplay();
-  void toggleWireframeMode();
-  // void toggleSelectTerrain();
+  void keyPressed(int key) override;
+  void SavePicture();
+  void TogglePointsDisplay();
+  void ToggleWireframeMode();
+  void ToggleSelectTerrain();
 
-  void keyReleased(int key);
+  void keyReleased(int key) override;
 
   void mouseMoved(int x, int y);
 
