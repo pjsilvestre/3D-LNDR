@@ -147,6 +147,8 @@ void ofApp::DrawAxis(const glm::vec3& location) {
 
 //--------------------------------------------------------------
 void ofApp::DrawLanderBoundingBoxes() {
+  // TODO update lander bounding boxes on lander movement, negating need for
+  // matrix multiplication here
   ofPushMatrix();
   ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
@@ -167,16 +169,12 @@ void ofApp::DrawLanderBounds() {
 
 //--------------------------------------------------------------
 void ofApp::DrawLanderCollisionBoxes() {
-  ofPushMatrix();
-  ofMultMatrix(lander_.getModelMatrix());
   ofNoFill();
-  ofSetColor(ofColor::blue);
+  ofSetColor(ofColor::hotPink);
 
   for (const auto& box : terrain_collision_boxes_) {
     box.Draw();
   }
-
-  ofPopMatrix();
 }
 
 //--------------------------------------------------------------

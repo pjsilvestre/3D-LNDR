@@ -174,17 +174,31 @@ void Octree::DrawLeafNodes(const TreeNode& node) {
 }
 
 /**
- * @brief TODO
- * @param box TODO
- * @param node TODO
- * @param terrain_collision_boxes TODO
- * @return TODO
+ * @brief Determines which leaf nodes in this Octree are intersected by a given
+ * Box
+ * @param box The Box potentially intersecting this Octree
+ * @param node The current node being checked for intersection, which may or may
+ * not have chldren nodes
+ * @param terrain_collision_boxes (SIDE EFFECT RETURN VALUE) The final,
+ * intersected leaf nodes
+ * @return True if the Box intersects this Octree, false otherwise
  */
 bool Octree::Intersect(const Box& box, const TreeNode& node,
                        vector<Box>& terrain_collision_boxes) {
-  // TODO
+  // FIXME not all control paths return a value
 
-  return false;
+  if (node.box_.Overlap(box)) {
+    if (node.children_nodes_.empty()) {
+      terrain_collision_boxes.push_back(node.box_);
+      return true;
+    }
+
+    for (const auto& child : node.children_nodes_) {
+      Intersect(box, child, terrain_collision_boxes);
+    }
+  } else {
+    return false;
+  }
 }
 
 /**

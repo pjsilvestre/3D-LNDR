@@ -106,8 +106,12 @@ bool Box::Intersect(const Ray& ray, const float z_buffer_min,
  * @return True if this Box overlaps the other Box, false otherwise
  */
 bool Box::Overlap(const Box& other_box) const {
-  if (glm::length(other_box.Center() - Center()) < 50) {
-    return true;
+  if (min().x < other_box.max().x && other_box.min().x < max().x) {
+    if (min().y < other_box.max().y && other_box.min().y < max().y) {
+      if (min().z < other_box.max().z && other_box.min().z < max().z) {
+        return true;
+      }
+    }
   }
 
   return false;
