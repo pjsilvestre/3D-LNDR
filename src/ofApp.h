@@ -19,8 +19,8 @@
 
 class ofApp : public ofBaseApp {
  public:
-  void setup();
-  void initLightingAndMaterials();
+  void setup() override;
+  static void InitializeLighting();
 
   void update();
 
@@ -88,7 +88,6 @@ class ofApp : public ofBaseApp {
 
   Box bounding_box_;
   Box lander_bounds_;
-  Box test_box_;
   vector<Box> collision_boxes_;
   vector<Box> bounding_boxes_;
 

@@ -2,60 +2,54 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-  // setup scene, lighting, state and load geometry
-  cam_.setDistance(10);
-  cam_.setNearClip(.1);
-  cam_.setFov(65.5);  // approx equivalent to 28mm in 35mm format
-  ofSetVerticalSync(true);
-  cam_.disableMouseInput();
-  ofEnableSmoothing();
   ofEnableDepthTest();
+  ofEnableSmoothing();
+  ofSetVerticalSync(true);
 
-  // setup rudimentary lighting
-  initLightingAndMaterials();
+  cam_.disableMouseInput();
+  cam_.setDistance(10);
+  cam_.setFov(65.5f);  // approx equivalent to 28mm in 35mm format
+  cam_.setNearClip(0.1f);
+
+  InitializeLighting();
 
   mars_.loadModel("geo/mars-low-5x-v2.obj");
   mars_.setScaleNormalization(false);
 
-  // create sliders for testing
+  const auto max_num_octree_levels{10};
   gui_.setup();
-  gui_.add(num_octree_levels_.setup("Number of Octree Levels", 1, 1, 10));
+  gui_.add(num_octree_levels_.setup("Number of Octree Levels", 1, 1,
+                                    max_num_octree_levels));
 
-  //  Create Octree for testing.
-  octree_ = Octree(mars_.getMesh(0), 10);
-
-  cout << "Number of Verts: " << mars_.getMesh(0).getNumVertices() << endl;
-
-  test_box_ = Box(glm::vec3(3, 3, 0), glm::vec3(5, 5, 2));
+  octree_ = Octree(mars_.getMesh(0), max_num_octree_levels);
+  cout << "number of terrain vertices: " << mars_.getMesh(0).getNumVertices()
+       << endl;
 }
 
 //--------------------------------------------------------------
-void ofApp::initLightingAndMaterials() {
-  // setup basic ambient lighting in GL  (for now, enable just 1 light)
-  static float ambient[] = {.5f, .5f, .5, 1.0f};
-  static float diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+void ofApp::InitializeLighting() {
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHTING);
 
-  static float position[] = {5.0, 5.0, 5.0, 0.0};
-
-  static float lmodel_ambient[] = {1.0f, 1.0f, 1.0f, 1.0f};
-
-  static float lmodel_twoside[] = {GL_TRUE};
+  float ambient[]{0.5f, 0.5f, 0.5, 1.0f};
+  float diffuse[]{1.0f, 1.0f, 1.0f, 1.0f};
+  float position[]{5.0f, 5.0f, 5.0f, 0.0f};
 
   glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
   glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
   glLightfv(GL_LIGHT0, GL_POSITION, position);
-
-  glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-  glLightfv(GL_LIGHT1, GL_POSITION, position);
-
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-  glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, lmodel_twoside);
-
-  glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
-  //	glEnable(GL_LIGHT1);
-  glShadeModel(GL_SMOOTH);
+
+  // glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
+  // glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+  // glLightfv(GL_LIGHT1, GL_POSITION, position);
+  // glEnable(GL_LIGHT1);
+
+  float lander_model_ambient[]{1.0f, 1.0f, 1.0f, 1.0f};
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lander_model_ambient);
+
+  float lander_model_two_side[]{GL_TRUE};
+  glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, lander_model_two_side);
 }
 
 //--------------------------------------------------------------
@@ -306,12 +300,6 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
     collision_boxes_.clear();
     octree_.intersect(bounds, octree_.root_, collision_boxes_);
-
-    // if (bounds.overlap(testBox)) {
-    //  cout << "overlap" << endl;
-    //} else {
-    //  cout << "OK" << endl;
-    //}
   } else {
     ofVec3f p;
     raySelectWithOctree(p);
@@ -383,7 +371,8 @@ void ofApp::mousePressed(int x, int y, int button) {
 
     if (hit) {
       lander_selected_ = true;
-      mouse_down_pos_ = getMousePointOnPlane(lander_.getPosition(), cam_.getZAxis());
+      mouse_down_pos_ =
+          getMousePointOnPlane(lander_.getPosition(), cam_.getZAxis());
       mouse_last_pos_ = mouse_down_pos_;
       dragging_ = true;
     } else {
@@ -456,7 +445,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
       glm::vec3 max = lander_.getSceneMax();
       float offset = (max.y - min.y) / 2.0;
       lander_.setPosition(intersectPoint.x, intersectPoint.y - offset,
-                         intersectPoint.z);
+                          intersectPoint.z);
 
       // set up bounding box for lander while we are at it
       lander_bounds_ =
