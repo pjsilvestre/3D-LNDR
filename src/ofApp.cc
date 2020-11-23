@@ -16,15 +16,15 @@ void ofApp::setup() {
   mars_.loadModel("geo/mars-low-5x-v2.obj");
   mars_.setScaleNormalization(false);
 
-  const auto max_num_octree_levels{10};
+  const auto max_num_octree_levels = 10;
   gui_.setup();
   gui_.add(num_octree_levels_.setup("Number of Octree Levels", 1, 1,
                                     max_num_octree_levels));
 
   cout << "creating octree..." << endl;
-  const auto octree_creation_start{ofGetElapsedTimeMillis()};
+  const auto octree_creation_start = ofGetElapsedTimeMillis();
   octree_ = Octree(mars_.getMesh(0), max_num_octree_levels);
-  const auto octree_creation_finish{ofGetElapsedTimeMillis()};
+  const auto octree_creation_finish = ofGetElapsedTimeMillis();
   const auto octree_creation_time =
       octree_creation_finish - octree_creation_start;
   cout << "octree created in " << octree_creation_time << "ms ("
@@ -324,10 +324,10 @@ void ofApp::mouseDragged(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
   if (dragging_) {
-    auto lander_position{lander_.getPosition()};
-    const auto mouse_position{
-        GetMousePointOnPlane(lander_position, cam_.getZAxis())};
-    const auto delta{mouse_position - mouse_last_pos_};
+    auto lander_position = lander_.getPosition();
+    const auto mouse_position =
+        GetMousePointOnPlane(lander_position, cam_.getZAxis());
+    const auto delta = mouse_position - mouse_last_pos_;
 
     lander_position += delta;
 
@@ -335,9 +335,11 @@ void ofApp::mouseDragged(int x, int y, int button) {
                         lander_position.z);
     mouse_last_pos_ = mouse_position;
 
-    const auto min_lander_bounds{lander_.getSceneMin() + lander_.getPosition()};
-    const auto max_lander_bounds{lander_.getSceneMax() + lander_.getPosition()};
-    const auto new_lander_bounds{Box(min_lander_bounds, max_lander_bounds)};
+    const auto min_lander_bounds =
+        lander_.getSceneMin() + lander_.getPosition();
+    const auto max_lander_bounds =
+        lander_.getSceneMax() + lander_.getPosition();
+    const auto new_lander_bounds = Box(min_lander_bounds, max_lander_bounds);
 
     lander_bounds_ = new_lander_bounds;
 
@@ -356,31 +358,32 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
   // return intersection point.
 
   // ray setup
-  const auto origin{cam_.getPosition()};
-  const auto mouse_world_space{
-      cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0))};
-  const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
+  const auto origin = cam_.getPosition();
+  const auto mouse_world_space =
+      cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+  const auto mouse_direction = glm::normalize(mouse_world_space - origin);
   float distance;
 
-  const auto hit{glm::intersectRayPlane(origin, mouse_direction, plane_origin,
-                                        plane_normal, distance)};
+  const auto hit = glm::intersectRayPlane(origin, mouse_direction, plane_origin,
+                                          plane_normal, distance);
 
   if (hit) {
     // find the point of intersection on the plane. compute using parametric
     // representation of a line: p' = p + s * dir;
-    const auto intersection_point{origin + distance * mouse_direction};
+    const auto intersection_point = origin + distance * mouse_direction;
 
     return intersection_point;
-  } else
-    return glm::vec3(0.0f);
+  }
+
+  return glm::vec3(0.0f);
 }
 
 //--------------------------------------------------------------
 bool ofApp::SelectOctreeNode(glm::vec3& return_point) {
-  const auto mouse{glm::vec3(mouseX, mouseY, 0.0f)};
-  const auto ray_origin{cam_.screenToWorld(mouse)};
-  const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
-  const auto mouse_ray{Ray(ray_origin, ray_direction)};
+  const auto mouse = glm::vec3(mouseX, mouseY, 0.0f);
+  const auto ray_origin = cam_.screenToWorld(mouse);
+  const auto ray_direction = glm::normalize(ray_origin - cam_.getPosition());
+  const auto mouse_ray = Ray(ray_origin, ray_direction);
 
   const auto before_point_selected = ofGetElapsedTimeMillis();
   point_selected_ = octree_.Intersect(mouse_ray, octree_.root_, selected_node_);
@@ -401,14 +404,16 @@ void ofApp::mousePressed(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
   if (lander_loaded_) {
-    const auto origin{cam_.getPosition()};
-    const auto mouse_world_space{
-        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0))};
-    const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
+    const auto origin = cam_.getPosition();
+    const auto mouse_world_space =
+        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+    const auto mouse_direction = glm::normalize(mouse_world_space - origin);
 
-    const auto min_lander_bounds{lander_.getSceneMin() + lander_.getPosition()};
-    const auto max_lander_bounds{lander_.getSceneMax() + lander_.getPosition()};
-    const auto new_lander_bounds{Box(min_lander_bounds, max_lander_bounds)};
+    const auto min_lander_bounds =
+        lander_.getSceneMin() + lander_.getPosition();
+    const auto max_lander_bounds =
+        lander_.getSceneMax() + lander_.getPosition();
+    const auto new_lander_bounds = Box(min_lander_bounds, max_lander_bounds);
 
     lander_bounds_ = new_lander_bounds;
 
@@ -468,12 +473,12 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
     // intersection, then place lander there.
 
     // ray setup
-    const auto origin{cam_.getPosition()};
-    const auto mouse_world_space{
-        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0))};
+    const auto origin = cam_.getPosition();
+    const auto mouse_world_space =
+        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
     const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
-    const auto plane_origin{glm::vec3(0.0f)};
-    const auto plane_normal{cam_.getZAxis()};
+    const auto plane_origin = glm::vec3(0.0f);
+    const auto plane_normal = cam_.getZAxis();
     float distance;
 
     glm::intersectRayPlane(origin, mouse_direction, plane_origin, plane_normal,
@@ -483,11 +488,11 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
     // representation of a line: p' = p + s * dir;
     const auto intersection_point{origin + distance * mouse_direction};
 
-    const auto min_lander_bounds{lander_.getSceneMin()};
-    const auto max_lander_bounds{lander_.getSceneMax()};
+    const auto min_lander_bounds = lander_.getSceneMin();
+    const auto max_lander_bounds = lander_.getSceneMax();
     lander_bounds_ = Box(min_lander_bounds, max_lander_bounds);
 
-    const auto offset{(max_lander_bounds.y - min_lander_bounds.y) / 2.0f};
+    const auto offset = (max_lander_bounds.y - min_lander_bounds.y) / 2.0f;
     lander_.setPosition(intersection_point.x, intersection_point.y - offset,
                         intersection_point.z);
   }
@@ -500,8 +505,8 @@ void ofApp::gotMessage(ofMessage msg) {}
 bool ofApp::MouseIntersectPlane(const glm::vec3& plane_point,
                                 const glm::vec3& plane_normal,
                                 glm::vec3& intersection_point) {
-  const auto ray_origin{cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0.0f))};
-  const auto ray_direction{glm::normalize(ray_origin - cam_.getPosition())};
+  const auto ray_origin = cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0.0f));
+  const auto ray_direction = glm::normalize(ray_origin - cam_.getPosition());
 
   return Utility::RayIntersectPlane(ray_origin, ray_direction, plane_point,
                                     plane_normal, intersection_point);
