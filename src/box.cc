@@ -124,7 +124,7 @@ bool Box::Overlap(const Box& other_box) const {
  */
 Box Box::CreateMeshBoundingBox(const ofMesh& mesh) {
   // return a Mesh Bounding Box for the entire Mesh
-  const auto num_vertices{mesh.getNumVertices()};
+  const auto num_vertices = mesh.getNumVertices();
   const auto first_vertex = mesh.getVertex(0);
   auto max = first_vertex;
   auto min = first_vertex;
@@ -147,5 +147,6 @@ Box Box::CreateMeshBoundingBox(const ofMesh& mesh) {
     else if (current_vertex.z < min.z)
       min.z = current_vertex.z;
   }
+
   return Box{min, max};
 }
