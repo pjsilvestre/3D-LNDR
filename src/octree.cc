@@ -8,7 +8,7 @@
 Octree::Octree(const ofMesh& mesh, const int num_levels) {
   mesh_ = mesh;
   root_.box_ = Box::CreateMeshBoundingBox(mesh);
-  auto level{0};
+  auto level = 0;
 
   if (use_mesh_faces_) {
     // TODO load face vertices (?)
@@ -34,7 +34,7 @@ void Octree::Subdivide(const ofMesh& mesh, TreeNode& node, const int num_levels,
   if (current_level >= num_levels) return;
 
   current_level++;
-  auto total_points{0};
+  auto total_points = 0;
   auto sub_boxes = SubdivideBox8(node.box_);
 
   for (auto& box : sub_boxes) {
@@ -46,7 +46,7 @@ void Octree::Subdivide(const ofMesh& mesh, TreeNode& node, const int num_levels,
       child.points_ = GetMeshPointsInBox(mesh, node.points_, box);
     }
 
-    const auto count{child.points_.size()};
+    const auto count = child.points_.size();
     total_points += count;
 
     if (count > 0) {
@@ -60,9 +60,10 @@ void Octree::Subdivide(const ofMesh& mesh, TreeNode& node, const int num_levels,
   }
 
   // debug
-  const auto points_in_node{node.points_.size()};
+  const auto points_in_node = node.points_.size();
   if (points_in_node != total_points) {
     debug_stray_vertices_ += (points_in_node - total_points);
+
     if (debug_stray_vertices_ > 0) {
       cerr << "number of stray vertices: " << debug_stray_vertices_ << endl;
     }
@@ -228,6 +229,7 @@ bool Octree::Intersect(const Ray& ray, const TreeNode& current_node,
 }
 
 //-Private Methods----------------------------------------------
+
 void Octree::Draw(const TreeNode& node, const int num_levels,
                   int current_level) const {
   if (current_level >= num_levels) return;
