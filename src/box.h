@@ -1,4 +1,4 @@
-/*
+/**
  * @class Box
  * @brief Axis-aligned bounding box for use in optimized ray-box intersection
  * testing

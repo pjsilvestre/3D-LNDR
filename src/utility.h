@@ -1,4 +1,4 @@
-/*
+/**
  * @class Utility
  * @brief Utility class with miscellaneous functions
  * @author Kevin M. Smith (CS 134 SJSU)

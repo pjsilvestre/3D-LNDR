@@ -1,4 +1,4 @@
-/*
+/**
  * @class Octree
  * @brief 3D spatial partitioning data structure
  * @author Kevin M. Smith (CS 134 SJSU)

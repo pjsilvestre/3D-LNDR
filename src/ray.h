@@ -1,4 +1,4 @@
-/*
+/**
  * @class Ray
  * @brief Used for optimized ray-box intersection testing
  * @details Originally described in Amy Williams, Steve Barrus, R. Keith Morley,

@@ -1,3 +1,10 @@
+/**
+ * @class ofApp
+ * @brief Application main entry point
+ * @author Kevin M. Smith (CS 134 SJSU)
+ * @author Patrick Silvestre
+ */
+
 //--------------------------------------------------------------
 //
 //  Kevin M. Smith
@@ -5,8 +12,8 @@
 //  Octree Test - startup scene
 //
 //
-//  Student Name:   < Your Name goes Here >
-//  Date: <date of last version>
+//  Student Name: Patrick Silvestre
+//  Date: 11/22/2020
 
 #pragma once
 
