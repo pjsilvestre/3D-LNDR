@@ -293,9 +293,6 @@
     <ClInclude Include="src\utility.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\vector3.h">
-      <Filter>src</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
