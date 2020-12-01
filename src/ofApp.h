@@ -3,6 +3,16 @@
  * @brief Application main entry point
  * @author Kevin M. Smith (CS 134 SJSU)
  * @author Patrick Silvestre
+ *
+ * TODO lander physics (gravity, turbulence)
+ * TODO lander control (up, down, left, right; rotation along up axis)
+ * TODO lander exhaust using particle emitters and shaders
+ * TODO altitude detection using ray intersection
+ * TODO collision detection with terrain
+ * TODO terrain lighting with 3+ lights, lander lighting with 1+ lights
+ * TODO cameras (lander tracking camera, lander onboard camera, easycam)
+ * TODO sound (thrust)
+ * TODO background starfield
  */
 
 #pragma once
