@@ -76,8 +76,8 @@ void Octree::Subdivide(const ofMesh& mesh, TreeNode& node, const int num_levels,
  * @return The Box's 8 sub-boxes
  */
 vector<Box> Octree::SubdivideBox8(const Box& box) {
-  const auto min = box.min();
-  const auto max = box.max();
+  const auto min = box.get_min_corner();
+  const auto max = box.get_max_corner();
   const auto size = max - min;
   const auto center = size / 2 + min;
   const auto half_x_width = (max.x - min.x) / 2;
@@ -89,12 +89,12 @@ vector<Box> Octree::SubdivideBox8(const Box& box) {
   // generate "first floor"
   Box b[8];
   b[0] = Box(min, center);
-  b[1] = Box(b[0].min() + glm::vec3(half_x_width, 0, 0),
-             b[0].max() + glm::vec3(half_x_width, 0, 0));
-  b[2] = Box(b[1].min() + glm::vec3(0, 0, half_z_width),
-             b[1].max() + glm::vec3(0, 0, half_z_width));
-  b[3] = Box(b[2].min() + glm::vec3(-half_x_width, 0, 0),
-             b[2].max() + glm::vec3(-half_x_width, 0, 0));
+  b[1] = Box(b[0].get_min_corner() + glm::vec3(half_x_width, 0, 0),
+             b[0].get_max_corner() + glm::vec3(half_x_width, 0, 0));
+  b[2] = Box(b[1].get_min_corner() + glm::vec3(0, 0, half_z_width),
+             b[1].get_max_corner() + glm::vec3(0, 0, half_z_width));
+  b[3] = Box(b[2].get_min_corner() + glm::vec3(-half_x_width, 0, 0),
+             b[2].get_max_corner() + glm::vec3(-half_x_width, 0, 0));
 
   for (auto i = 0; i < 4; i++) {
     sub_boxes.push_back(b[i]);
@@ -102,7 +102,7 @@ vector<Box> Octree::SubdivideBox8(const Box& box) {
 
   // generate "second floor"
   for (auto i = 4; i < 8; i++) {
-    b[i] = Box(b[i - 4].min() + height, b[i - 4].max() + height);
+    b[i] = Box(b[i - 4].get_min_corner() + height, b[i - 4].get_max_corner() + height);
     sub_boxes.push_back(b[i]);
   }
 

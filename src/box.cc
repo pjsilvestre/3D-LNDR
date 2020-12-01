@@ -2,21 +2,22 @@
 
 /**
  * @brief Creates a Box
- * @param min The desired minimum corner
- * @param max The desired maximum corner
+ * @param min_corner The desired minimum corner
+ * @param max_corner The desired maximum corner
  */
-Box::Box(const glm::vec3& min, const glm::vec3& max) : corners_{min, max} {}
+Box::Box(const glm::vec3& min_corner, const glm::vec3& max_corner)
+    : corners_{min_corner, max_corner} {}
 
 /**
  * @brief Gets the center of this Box
  * @return A vector representing the center of this Box
  */
 glm::vec3 Box::Center() const {
-  auto center = max() - min();
+  auto center = corners_[1] - corners_[0];
   center.x /= 2;
   center.y /= 2;
   center.z /= 2;
-  center += min();
+  center += corners_[0];
 
   return center;
 }
@@ -24,10 +25,8 @@ glm::vec3 Box::Center() const {
  * @brief Draws this Box's wireframe
  */
 void Box::Draw() const {
-  const auto& min_corner = corners_[0];
-  const auto& max_corner = corners_[1];
-  const auto size = max_corner - min_corner;
-  const auto center = size / 2 + min_corner;
+  const auto size = corners_[1] - corners_[0];
+  const auto center = size / 2 + corners_[0];
 
   ofNoFill();
   ofDrawBox(center, size.x, size.y, size.z);
@@ -106,9 +105,12 @@ bool Box::Intersect(const Ray& ray, const float z_buffer_min,
  * @return True if this Box overlaps the other Box, false otherwise
  */
 bool Box::Overlap(const Box& other_box) const {
-  if (min().x < other_box.max().x && other_box.min().x < max().x) {
-    if (min().y < other_box.max().y && other_box.min().y < max().y) {
-      if (min().z < other_box.max().z && other_box.min().z < max().z) {
+  if (corners_[0].x < other_box.corners_[1].x &&
+      other_box.corners_[0].x < corners_[1].x) {
+    if (corners_[0].y < other_box.corners_[1].y &&
+        other_box.corners_[0].y < corners_[1].y) {
+      if (corners_[0].z < other_box.corners_[1].z &&
+          other_box.corners_[0].z < corners_[1].z) {
         return true;
       }
     }
@@ -123,7 +125,6 @@ bool Box::Overlap(const Box& other_box) const {
  * @return The mesh's bounding Box
  */
 Box Box::CreateMeshBoundingBox(const ofMesh& mesh) {
-  // return a Mesh Bounding Box for the entire Mesh
   const auto num_vertices = mesh.getNumVertices();
   const auto first_vertex = mesh.getVertex(0);
   auto max = first_vertex;

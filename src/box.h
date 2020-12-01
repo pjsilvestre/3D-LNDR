@@ -17,10 +17,10 @@
 class Box {
  public:
   Box() = default;
-  Box(const glm::vec3& min, const glm::vec3& max);
+  Box(const glm::vec3& min_corner, const glm::vec3& max_corner);
 
-  glm::vec3 min() const { return corners_[0]; }
-  glm::vec3 max() const { return corners_[1]; }
+  glm::vec3 get_min_corner() const { return corners_[0]; }
+  glm::vec3 get_max_corner() const { return corners_[1]; }
 
   glm::vec3 Center() const;
   void Draw() const;
@@ -31,6 +31,8 @@ class Box {
 
   static Box CreateMeshBoundingBox(const ofMesh& mesh);
 
- private:
-  glm::vec3 corners_[2];
+  glm::vec3 corners_[2];  // corners_[0] = min_corner, corners_[1] = max_corner
+                          // I would create min_corner and max_corner data
+                          // members, but this would require non-trivial
+                          // refactoring of Ray::Intersect()
 };
