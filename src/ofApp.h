@@ -5,16 +5,6 @@
  * @author Patrick Silvestre
  */
 
-//--------------------------------------------------------------
-//
-//  Kevin M. Smith
-//
-//  Octree Test - startup scene
-//
-//
-//  Student Name: Patrick Silvestre
-//  Date: 11/22/2020
-
 #pragma once
 
 #include "glm/gtx/intersect.hpp"
