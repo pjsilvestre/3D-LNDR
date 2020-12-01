@@ -31,6 +31,7 @@ class Box {
 
   static Box CreateMeshBoundingBox(const ofMesh& mesh);
 
+ private:
   glm::vec3 corners_[2];  // corners_[0] = min_corner, corners_[1] = max_corner
                           // I would create min_corner and max_corner data
                           // members, but this would require non-trivial
