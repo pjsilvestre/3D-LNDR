@@ -60,7 +60,7 @@ void ofApp::InitializeLighting() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {}
+void ofApp::update() { lander_.Update(); }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
@@ -71,31 +71,18 @@ void ofApp::draw() {
   glDepthMask(true);
 
   cam_.begin();
-  ofPushMatrix();
 
   if (terrain_selected_) {
     DrawAxis(glm::vec3(0.0f));
   } else {
-    DrawAxis(lander_.getPosition());
+    DrawAxis(lander_.get_position());
   }
 
-  if (wireframe_enabled_) {
-    ofDisableLighting();
-    DrawWireframes();
-  } else {
-    ofEnableLighting();
-    mars_.drawFaces();
+  ofEnableLighting();
+  mars_.drawFaces();
 
-    if (lander_loaded_) {
-      lander_.drawFaces();
-
-      if (lander_bounding_boxes_displayed_) DrawLanderBoundingBoxes();
-
-      if (lander_selected_) {
-        DrawLanderBounds();
-        DrawLanderCollisionBoxes();
-      }
-    }
+  if (lander_.is_loaded()) {
+    lander_.Draw();
   }
 
   if (terrain_points_displayed_) DrawTerrainPoints();
@@ -104,19 +91,7 @@ void ofApp::draw() {
 
   if (octree_displayed_) DrawOctree();
 
-  ofPopMatrix();
   cam_.end();
-}
-
-//--------------------------------------------------------------
-void ofApp::DrawWireframes() {
-  ofSetColor(ofColor::slateGray);
-
-  mars_.drawWireframe();
-
-  if (lander_loaded_) {
-    lander_.drawWireframe();
-  }
 }
 
 //--------------------------------------------------------------
@@ -140,38 +115,6 @@ void ofApp::DrawAxis(const glm::vec3& location) {
   ofDrawLine(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   ofPopMatrix();
-}
-
-//--------------------------------------------------------------
-void ofApp::DrawLanderBoundingBoxes() {
-  // TODO update lander bounding boxes on lander movement, negating need for
-  // matrix multiplication here
-  ofPushMatrix();
-  ofMultMatrix(lander_.getModelMatrix());
-  ofNoFill();
-  ofSetColor(ofColor::white);
-
-  for (auto& box : lander_bounding_boxes_) {
-    box.Draw();
-  }
-
-  ofPopMatrix();
-}
-
-//--------------------------------------------------------------
-void ofApp::DrawLanderBounds() {
-  ofSetColor(ofColor::white);
-  lander_bounds_.Draw();
-}
-
-//--------------------------------------------------------------
-void ofApp::DrawLanderCollisionBoxes() {
-  ofNoFill();
-  ofSetColor(ofColor::hotPink);
-
-  for (const auto& box : terrain_collision_boxes_) {
-    box.Draw();
-  }
 }
 
 //--------------------------------------------------------------
@@ -209,10 +152,6 @@ void ofApp::DrawOctree() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(const int key) {
   switch (key) {
-    case 'B':
-    case 'b':
-      lander_bounding_boxes_displayed_ = !lander_bounding_boxes_displayed_;
-      break;
     case 'C':
     case 'c':
       if (cam_.getMouseInputEnabled()) {
@@ -256,10 +195,6 @@ void ofApp::keyPressed(const int key) {
     case 'v':
       TogglePointsDisplay();
       break;
-    case 'W':
-    case 'w':
-      ToggleWireframeMode();
-      break;
     case OF_KEY_ALT:
       cam_.enableMouseInput();
       alt_key_down_ = true;
@@ -293,8 +228,6 @@ void ofApp::TogglePointsDisplay() {
   terrain_points_displayed_ = !terrain_points_displayed_;
 }
 
-//--------------------------------------------------------------
-void ofApp::ToggleWireframeMode() { wireframe_enabled_ = !wireframe_enabled_; }
 
 //--------------------------------------------------------------
 void ofApp::ToggleSelectTerrain() { terrain_selected_ = !terrain_selected_; }
@@ -324,27 +257,21 @@ void ofApp::mouseDragged(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
   if (dragging_) {
-    auto lander_position = lander_.getPosition();
+    auto lander_position = lander_.get_position();
     const auto mouse_position =
         GetMousePointOnPlane(lander_position, cam_.getZAxis());
     const auto delta = mouse_position - mouse_last_pos_;
 
     lander_position += delta;
 
-    lander_.setPosition(lander_position.x, lander_position.y,
-                        lander_position.z);
+    lander_.set_position(lander_position);
     mouse_last_pos_ = mouse_position;
 
-    const auto min_lander_bounds =
-        lander_.getSceneMin() + lander_.getPosition();
-    const auto max_lander_bounds =
-        lander_.getSceneMax() + lander_.getPosition();
-    const auto new_lander_bounds = Box(min_lander_bounds, max_lander_bounds);
-
-    lander_bounds_ = new_lander_bounds;
-
-    terrain_collision_boxes_.clear();
-    octree_.Intersect(lander_bounds_, octree_.root_, terrain_collision_boxes_);
+    lander_.clear_collision_boxes();
+    vector<Box> terrain_collision_boxes;
+    octree_.Intersect(lander_.get_bounds(), octree_.root_,
+                      terrain_collision_boxes);
+    lander_.set_collision_boxes(terrain_collision_boxes);
   } else {
     glm::vec3 unused_point;
     SelectOctreeNode(unused_point);
@@ -403,31 +330,22 @@ bool ofApp::SelectOctreeNode(glm::vec3& return_point) {
 void ofApp::mousePressed(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
-  if (lander_loaded_) {
+  if (lander_.is_loaded()) {
     const auto origin = cam_.getPosition();
     const auto mouse_world_space =
         cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
     const auto mouse_direction = glm::normalize(mouse_world_space - origin);
-
-    const auto min_lander_bounds =
-        lander_.getSceneMin() + lander_.getPosition();
-    const auto max_lander_bounds =
-        lander_.getSceneMax() + lander_.getPosition();
-    const auto new_lander_bounds = Box(min_lander_bounds, max_lander_bounds);
-
-    lander_bounds_ = new_lander_bounds;
-
     const auto hit =
-        lander_bounds_.Intersect(Ray(origin, mouse_direction), 0, 10000);
+        lander_.get_bounds().Intersect(Ray(origin, mouse_direction), 0, 10000);
 
     if (hit) {
-      lander_selected_ = true;
+      lander_.select();
       terrain_selected_ = false;
       dragging_ = true;
       mouse_last_pos_ =
-          GetMousePointOnPlane(lander_.getPosition(), cam_.getZAxis());
+          GetMousePointOnPlane(lander_.get_position(), cam_.getZAxis());
     } else {
-      lander_selected_ = false;
+      lander_.unselect();
       terrain_selected_ = true;
       dragging_ = false;
     }
@@ -450,53 +368,7 @@ void ofApp::mouseExited(int x, int y) {}
 void ofApp::windowResized(int w, int h) {}
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo) {
-  // support drag-and-drop of model (.obj) file loading. when
-  // model is dropped in viewport, place origin under cursor
-
-  if (lander_.loadModel(dragInfo.files[0])) {
-    lander_loaded_ = true;
-    lander_.setPosition(0.0f, 0.0f, 0.0f);
-    lander_.setScaleNormalization(false);
-
-    cout << "number of meshes: " << lander_.getNumMeshes() << endl;
-
-    lander_bounding_boxes_.clear();
-
-    for (auto i = 0; i < lander_.getMeshCount(); i++) {
-      lander_bounding_boxes_.push_back(
-          Box::CreateMeshBoundingBox(lander_.getMesh(i)));
-    }
-
-    // goal: place model at mouse pointer
-    // strategy: intersect a plane parallel to camera plane. find point of
-    // intersection, then place lander there.
-
-    // ray setup
-    const auto origin = cam_.getPosition();
-    const auto mouse_world_space =
-        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
-    const auto mouse_direction{glm::normalize(mouse_world_space - origin)};
-    const auto plane_origin = glm::vec3(0.0f);
-    const auto plane_normal = cam_.getZAxis();
-    float distance;
-
-    glm::intersectRayPlane(origin, mouse_direction, plane_origin, plane_normal,
-                           distance);
-
-    // find the point of intersection on the plane. compute using parametric
-    // representation of a line: p' = p + s * dir;
-    const auto intersection_point{origin + distance * mouse_direction};
-
-    const auto min_lander_bounds = lander_.getSceneMin();
-    const auto max_lander_bounds = lander_.getSceneMax();
-    lander_bounds_ = Box(min_lander_bounds, max_lander_bounds);
-
-    const auto offset = (max_lander_bounds.y - min_lander_bounds.y) / 2.0f;
-    lander_.setPosition(intersection_point.x, intersection_point.y - offset,
-                        intersection_point.z);
-  }
-}
+void ofApp::dragEvent(ofDragInfo dragInfo) {}
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg) {}

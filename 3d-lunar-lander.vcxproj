@@ -195,6 +195,7 @@
     <ClCompile Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxGui\src\ofxSliderGroup.cpp" />
     <ClCompile Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxGui\src\ofxToggle.cpp" />
     <ClCompile Include="src\box.cc" />
+    <ClCompile Include="src\lander.cc" />
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\octree.cc" />
     <ClCompile Include="src\ofApp.cc" />
@@ -261,6 +262,7 @@
     <ClInclude Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxGui\src\ofxSliderGroup.h" />
     <ClInclude Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxGui\src\ofxToggle.h" />
     <ClInclude Include="src\box.h" />
+    <ClInclude Include="src\lander.h" />
     <ClInclude Include="src\octree.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\ray.h" />

@@ -18,6 +18,7 @@
 #pragma once
 
 #include "glm/gtx/intersect.hpp"
+#include "lander.h"
 #include "octree.h"
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
@@ -32,11 +33,7 @@ class ofApp : public ofBaseApp {
   void update() override;
 
   void draw() override;
-  void DrawWireframes();
   void DrawAxis(const glm::vec3& location);
-  void DrawLanderBoundingBoxes();
-  void DrawLanderBounds();
-  void DrawLanderCollisionBoxes();
   void DrawTerrainPoints();
   void DrawPointSelected();
   void DrawOctree();
@@ -44,7 +41,6 @@ class ofApp : public ofBaseApp {
   void keyPressed(int key) override;
   void SavePicture();
   void TogglePointsDisplay();
-  void ToggleWireframeMode();
   void ToggleSelectTerrain();
 
   void keyReleased(int key) override;
@@ -77,31 +73,23 @@ class ofApp : public ofBaseApp {
   bool ctrl_key_down_{false};
   bool dragging_{false};
 
-  bool lander_loaded_{false};
-  bool lander_selected_{false};
   bool terrain_selected_{true};
   bool point_selected_{false};
 
   bool gui_displayed_{true};
-  bool wireframe_enabled_{false};
   bool terrain_points_displayed_{false};
   bool leaf_nodes_displayed_{false};
   bool octree_displayed_{false};
-  bool lander_bounding_boxes_displayed_{false};
 
   ofEasyCam cam_;
   ofxAssimpModelLoader mars_;
-  ofxAssimpModelLoader lander_;
+  Lander lander_;
   ofLight light_;
 
   ofxIntSlider num_octree_levels_;
   ofxPanel gui_;
 
   glm::vec3 mouse_last_pos_;
-
-  Box lander_bounds_;
-  vector<Box> lander_bounding_boxes_;
-  vector<Box> terrain_collision_boxes_;
 
   TreeNode selected_node_;
   Octree octree_;
