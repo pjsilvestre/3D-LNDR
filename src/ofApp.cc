@@ -152,6 +152,25 @@ void ofApp::DrawOctree() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(const int key) {
   switch (key) {
+    case 'W':
+    case 'w':
+      lander_.ForwardThrust();
+      break;
+    case 'A':
+    case 'a':
+      lander_.LeftwardThrust();
+      break;
+    case 'S':
+    case 's':
+      lander_.BackwardThrust();
+      break;
+    case 'D':
+    case 'd':
+      lander_.RightwardThrust();
+      break;
+    case ' ':
+      lander_.UpwardThrust();
+      break;
     case 'C':
     case 'c':
       if (cam_.getMouseInputEnabled()) {
@@ -179,10 +198,6 @@ void ofApp::keyPressed(const int key) {
     case 'R':
     case 'r':
       cam_.reset();
-      break;
-    case 'S':
-    case 's':
-      SavePicture();
       break;
     case 'T':
     case 't':
@@ -212,22 +227,9 @@ void ofApp::keyPressed(const int key) {
 }
 
 //--------------------------------------------------------------
-void ofApp::SavePicture() {
-  ofImage picture;
-  picture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
-
-  if (picture.save("screenshot.png")) {
-    cout << "screenshot saved" << endl;
-  } else {
-    cerr << "screenshot not saved" << endl;
-  }
-}
-
-//--------------------------------------------------------------
 void ofApp::TogglePointsDisplay() {
   terrain_points_displayed_ = !terrain_points_displayed_;
 }
-
 
 //--------------------------------------------------------------
 void ofApp::ToggleSelectTerrain() { terrain_selected_ = !terrain_selected_; }

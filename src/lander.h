@@ -16,8 +16,6 @@ class Lander {
 
   void Update();
   void Draw();
-  void DrawBounds();
-  void DrawCollisionBoxes();
 
   bool is_loaded() const { return loaded_; }
   void select() { selected_ = true; }
@@ -31,6 +29,12 @@ class Lander {
     collision_boxes_ = terrain_collision_boxes;
   }
 
+  void UpwardThrust();
+  void ForwardThrust();
+  void BackwardThrust();
+  void LeftwardThrust();
+  void RightwardThrust();
+
  private:
   bool loaded_ = false;
   bool selected_ = false;
@@ -42,4 +46,8 @@ class Lander {
   glm::mat4 transformation_matrix_;
   Box bounds_;
   vector<Box> collision_boxes_;
+
+  void DrawBounds();
+  void DrawCollisionBoxes();
+  void Integrate();
 };

@@ -39,7 +39,6 @@ class ofApp : public ofBaseApp {
   void DrawOctree();
 
   void keyPressed(int key) override;
-  void SavePicture();
   void TogglePointsDisplay();
   void ToggleSelectTerrain();
 
