@@ -64,6 +64,9 @@
     <ClCompile Include="src\lander.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\constants.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -297,6 +300,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\lander.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\constants.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

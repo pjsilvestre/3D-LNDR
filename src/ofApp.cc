@@ -5,6 +5,7 @@ void ofApp::setup() {
   ofEnableDepthTest();
   ofEnableSmoothing();
   ofSetVerticalSync(true);
+  ofSetFrameRate(60);
 
   cam_.disableMouseInput();
   cam_.setDistance(10);
@@ -60,7 +61,7 @@ void ofApp::InitializeLighting() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() { lander_.Update(); }
+void ofApp::update() { lander_.Update(octree_); }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
@@ -268,12 +269,6 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
     lander_.set_position(lander_position);
     mouse_last_pos_ = mouse_position;
-
-    lander_.clear_collision_boxes();
-    vector<Box> terrain_collision_boxes;
-    octree_.Intersect(lander_.get_bounds(), octree_.root_,
-                      terrain_collision_boxes);
-    lander_.set_collision_boxes(terrain_collision_boxes);
   } else {
     glm::vec3 unused_point;
     SelectOctreeNode(unused_point);

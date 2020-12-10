@@ -5,7 +5,7 @@
  * @author Patrick Silvestre
  *
  * TODO lander physics (gravity, turbulence)
- * TODO lander control (up, down, left, right; rotation along up axis)
+ * TODO lander control (rotation along up axis)
  * TODO lander exhaust using particle emitters and shaders
  * TODO altitude detection using ray intersection
  * TODO collision detection with terrain
