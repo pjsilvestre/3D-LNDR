@@ -4,7 +4,7 @@
  * @author Kevin M. Smith (CS 134 SJSU)
  * @author Patrick Silvestre
  *
- * TODO lander physics (turbulence)
+ * TODO lander physics (explosion upon impact velocity upon some threshold)
  * TODO lander control (rotation along up axis)
  * TODO lander exhaust using particle emitters and shaders
  * TODO terrain lighting with 3+ lights, lander lighting with 1+ lights
@@ -33,12 +33,8 @@ class ofApp : public ofBaseApp {
   void draw() override;
   void DrawAltimeterGauge() const;
   void DrawAxis(const glm::vec3& location);
-  void DrawTerrainPoints();
-  void DrawOctree();
 
   void keyPressed(int key) override;
-  void TogglePointsDisplay();
-  void ToggleSelectTerrain();
 
   void keyReleased(int key) override;
 
@@ -63,25 +59,17 @@ class ofApp : public ofBaseApp {
   bool MouseIntersectPlane(const glm::vec3& plane_point,
                            const glm::vec3& plane_normal,
                            glm::vec3& intersection_point);
-  void SetCameraTarget();
 
-  bool alt_key_down_{false};
-  bool ctrl_key_down_{false};
   bool dragging_{false};
 
   bool terrain_selected_{true};
 
   bool gui_displayed_{false};
-  bool terrain_points_displayed_{false};
-  bool leaf_nodes_displayed_{false};
-  bool octree_displayed_{false};
 
   ofEasyCam cam_;
   ofxAssimpModelLoader mars_;
   LanderSystem lander_system_;
-  ofLight light_;
 
-  ofxIntSlider num_octree_levels_;
   ofxPanel gui_;
 
   glm::vec3 mouse_last_pos_;

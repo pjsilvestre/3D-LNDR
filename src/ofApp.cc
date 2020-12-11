@@ -8,7 +8,7 @@ void ofApp::setup() {
   ofSetFrameRate(60);
 
   cam_.setDistance(10);
-  cam_.setFov(65.5f);  // approx equivalent to 28mm in 35mm format
+  cam_.setFov(65.5f);
   cam_.setNearClip(0.1f);
 
   InitializeLighting();
@@ -16,21 +16,8 @@ void ofApp::setup() {
   mars_.loadModel("geo/mars-low-5x-v2.obj");
   mars_.setScaleNormalization(false);
 
-  const auto max_num_octree_levels = 10;
   gui_.setup();
-  gui_.add(num_octree_levels_.setup("Number of Octree Levels", 1, 1,
-                                    max_num_octree_levels));
-
-  cout << "creating octree..." << endl;
-  const auto octree_creation_start = ofGetElapsedTimeMillis();
-  octree_ = Octree(mars_.getMesh(0), max_num_octree_levels);
-  const auto octree_creation_finish = ofGetElapsedTimeMillis();
-  const auto octree_creation_time =
-      octree_creation_finish - octree_creation_start;
-  cout << "octree created in " << octree_creation_time << "ms ("
-       << octree_creation_time / 1000.0f << "s)" << endl;
-  cout << "number of terrain vertices: " << mars_.getMesh(0).getNumVertices()
-       << endl;
+  octree_ = Octree(mars_.getMesh(0), 10);
 }
 
 //--------------------------------------------------------------
@@ -86,10 +73,6 @@ void ofApp::draw() {
     lander_system_.Draw();
   }
 
-  if (terrain_points_displayed_) DrawTerrainPoints();
-
-  if (octree_displayed_) DrawOctree();
-
   cam_.end();
 }
 
@@ -132,30 +115,6 @@ void ofApp::DrawAxis(const glm::vec3& location) {
 }
 
 //--------------------------------------------------------------
-void ofApp::DrawTerrainPoints() {
-  glPointSize(3.0f);
-  ofSetColor(ofColor::green);
-  mars_.drawVertices();
-}
-
-//--------------------------------------------------------------
-void ofApp::DrawOctree() {
-  ofDisableLighting();
-
-  if (leaf_nodes_displayed_) {
-    // octree_.drawLeafNodes(octree_.root_);
-    // cout << "number of leaf nodes: " << octree_.number_of_leaves_ << endl;
-    cerr << "leaf_nodes_displayed_ not implemented" << endl;
-  } else {
-    ofNoFill();
-    ofSetColor(ofColor::white);
-    octree_.Draw(num_octree_levels_, 0);
-  }
-
-  ofEnableLighting();
-}
-
-//--------------------------------------------------------------
 void ofApp::keyPressed(const int key) {
   switch (key) {
     case 'W':
@@ -193,28 +152,9 @@ void ofApp::keyPressed(const int key) {
     case 'h':
       gui_displayed_ = !gui_displayed_;
       break;
-    case 'L':
-    case 'l':
-      leaf_nodes_displayed_ = !leaf_nodes_displayed_;
-      break;
-    case 'O':
-    case 'o':
-      octree_displayed_ = !octree_displayed_;
-      break;
     case 'R':
     case 'r':
       cam_.reset();
-      break;
-    case 'T':
-    case 't':
-      SetCameraTarget();
-      break;
-    case 'U':
-    case 'u':
-      break;
-    case 'V':
-    case 'v':
-      TogglePointsDisplay();
       break;
     case 'X':
     case 'x':
@@ -226,14 +166,6 @@ void ofApp::keyPressed(const int key) {
       break;
     case OF_KEY_ALT:
       cam_.enableMouseInput();
-      alt_key_down_ = true;
-      break;
-    case OF_KEY_CONTROL:
-      ctrl_key_down_ = true;
-      break;
-    case OF_KEY_SHIFT:
-      break;
-    case OF_KEY_DEL:
       break;
     default:
       break;
@@ -241,24 +173,10 @@ void ofApp::keyPressed(const int key) {
 }
 
 //--------------------------------------------------------------
-void ofApp::TogglePointsDisplay() {
-  terrain_points_displayed_ = !terrain_points_displayed_;
-}
-
-//--------------------------------------------------------------
-void ofApp::ToggleSelectTerrain() { terrain_selected_ = !terrain_selected_; }
-
-//--------------------------------------------------------------
 void ofApp::keyReleased(const int key) {
   switch (key) {
     case OF_KEY_ALT:
       cam_.disableMouseInput();
-      alt_key_down_ = false;
-      break;
-    case OF_KEY_CONTROL:
-      ctrl_key_down_ = false;
-      break;
-    case OF_KEY_SHIFT:
       break;
     default:
       break;
@@ -365,9 +283,4 @@ bool ofApp::MouseIntersectPlane(const glm::vec3& plane_point,
 
   return Utility::RayIntersectPlane(ray_origin, ray_direction, plane_point,
                                     plane_normal, intersection_point);
-}
-
-//--------------------------------------------------------------
-void ofApp::SetCameraTarget() {
-  // Set the camera to use the selected point as it's new target
 }
