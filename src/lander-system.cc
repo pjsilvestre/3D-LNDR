@@ -7,6 +7,12 @@ LanderSystem::LanderSystem() {
 
 void LanderSystem::Update(const Octree& octree) {
   lander_.Update(octree);
+
+  if (lander_.collision_boxes_.size() >= 250) {
+    // assumption: perfectly elastic collision
+    lander_.forces_ += -lander_.velocity_;
+  }
+
   ParticleSystem::Update();
 }
 

@@ -7,7 +7,6 @@ void ofApp::setup() {
   ofSetVerticalSync(true);
   ofSetFrameRate(60);
 
-  cam_.disableMouseInput();
   cam_.setDistance(10);
   cam_.setFov(65.5f);  // approx equivalent to 28mm in 35mm format
   cam_.setNearClip(0.1f);
@@ -270,8 +269,8 @@ void ofApp::mouseDragged(int x, int y, int button) {
     lander_system_.set_position(lander_position);
     mouse_last_pos_ = mouse_position;
   } else {
-    glm::vec3 unused_point;
-    SelectOctreeNode(unused_point);
+    // glm::vec3 unused_point;
+    // SelectOctreeNode(unused_point);
   }
 }
 
@@ -347,8 +346,8 @@ void ofApp::mousePressed(int x, int y, int button) {
       dragging_ = false;
     }
   } else {
-    glm::vec3 unused_point;
-    SelectOctreeNode(unused_point);
+    // glm::vec3 unused_point;
+    // SelectOctreeNode(unused_point);
   }
 }
 

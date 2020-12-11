@@ -5,6 +5,7 @@ Lander::Lander() {
     loaded_ = true;
     model_.setScaleNormalization(false);
     model_.setPosition(position_.x, position_.y, position_.z);
+    position_ = glm::vec3(0.0f, 10.0f, 0.0f);
 
     bounds_ =
         Box(model_.getSceneMin() + position_, model_.getSceneMax() + position_);

@@ -8,7 +8,6 @@
  * TODO lander control (rotation along up axis)
  * TODO lander exhaust using particle emitters and shaders
  * TODO altitude detection using ray intersection
- * TODO collision detection with terrain
  * TODO terrain lighting with 3+ lights, lander lighting with 1+ lights
  * TODO cameras (lander tracking camera, lander onboard camera, easycam)
  * TODO sound (thrust)
