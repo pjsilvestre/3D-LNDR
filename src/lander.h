@@ -24,8 +24,8 @@ class Lander : public Particle {
 
   bool altimeter_enabled_ = true;
   bool loaded_ = false;
-  bool terrain_point_selected_ = false;
   bool selected_ = false;
+  bool terrain_point_selected_ = false;
   float altitude_ = 0.0f;
 
   ofxAssimpModelLoader model_;

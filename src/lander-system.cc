@@ -2,7 +2,8 @@
 
 LanderSystem::LanderSystem() {
   particles_.push_back(&lander_);
-  forces_.push_back(&gravity_force_);
+  forces_.push_back(&gravity_);
+  forces_.push_back(&turbulence_);
 }
 
 void LanderSystem::Update(const Octree& octree) {

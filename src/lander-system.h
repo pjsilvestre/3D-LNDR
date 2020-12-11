@@ -30,5 +30,7 @@ class LanderSystem : public ParticleSystem {
 
  private:
   Lander lander_;
-  GravityForce gravity_force_ = GravityForce(glm::vec3(0.0f, -0.01f, 0.0f));
+  GravityForce gravity_ = GravityForce(glm::vec3(0.0f, -0.01f, 0.0f));
+  XZTurbulenceForce turbulence_ =
+      XZTurbulenceForce(glm::vec3(-0.1f), glm::vec3(0.1f));
 };
