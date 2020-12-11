@@ -200,6 +200,7 @@
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\octree.cc" />
     <ClCompile Include="src\ofApp.cc" />
+    <ClCompile Include="src\particle.cc" />
     <ClCompile Include="src\ray.cc" />
     <ClCompile Include="src\utility.cc" />
   </ItemGroup>
@@ -267,6 +268,7 @@
     <ClInclude Include="src\lander.h" />
     <ClInclude Include="src\octree.h" />
     <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="src\particle.h" />
     <ClInclude Include="src\ray.h" />
     <ClInclude Include="src\utility.h" />
   </ItemGroup>

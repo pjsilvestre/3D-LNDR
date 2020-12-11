@@ -67,6 +67,7 @@
     <ClCompile Include="src\constants.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\particle.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -305,6 +306,7 @@
     <ClInclude Include="src\constants.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\particle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

@@ -11,10 +11,11 @@
 #include "constants.h"
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
+#include "particle.h"
 
 class Octree;
 
-class Lander {
+class Lander : public Particle {
  public:
   Lander();
 
@@ -40,14 +41,9 @@ class Lander {
   bool selected_ = false;
 
   ofxAssimpModelLoader model_;
-  glm::vec3 position_ = glm::vec3(0.0f);
-  glm::vec3 velocity_;
-  glm::vec3 acceleration_;
-  glm::mat4 transformation_matrix_;
   Box bounds_;
   vector<Box> collision_boxes_;
 
-  void DrawBounds();
-  void DrawCollisionBoxes();
-  void Integrate();
+  void DrawBounds() const;
+  void DrawCollisionBoxes() const;
 };

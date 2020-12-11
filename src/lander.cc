@@ -40,48 +40,37 @@ void Lander::Draw() {
 }
 
 void Lander::UpwardThrust() {
-  acceleration_ = glm::vec3(0.0f, Constants::kLanderInitialAcceleration, 0.0f);
+  forces_ += glm::vec3(0.0f, constants::kParticleInitialAcceleration, 0.0f);
 }
 
 void Lander::ForwardThrust() {
-  acceleration_ = glm::vec3(Constants::kLanderInitialAcceleration, 0.0f, 0.0f);
+  forces_  += glm::vec3(constants::kParticleInitialAcceleration, 0.0f, 0.0f);
 }
 
 void Lander::BackwardThrust() {
-  acceleration_ = glm::vec3(-Constants::kLanderInitialAcceleration, 0.0f, 0.0f);
+  forces_ += glm::vec3(-constants::kParticleInitialAcceleration, 0.0f, 0.0f);
 }
 
 void Lander::LeftwardThrust() {
-  acceleration_ = glm::vec3(0.0f, 0.0f, -Constants::kLanderInitialAcceleration);
+  forces_ += glm::vec3(0.0f, 0.0f, -constants::kParticleInitialAcceleration);
 }
 
 void Lander::RightwardThrust() {
-  acceleration_ = glm::vec3(0.0f, 0.0f, Constants::kLanderInitialAcceleration);
+  forces_ += glm::vec3(0.0f, 0.0f, constants::kParticleInitialAcceleration);
 }
 
 //-Private Methods----------------------------------------------
 
-void Lander::DrawBounds() {
+void Lander::DrawBounds() const {
   ofSetColor(ofColor::white);
   bounds_.Draw();
 }
 
-void Lander::DrawCollisionBoxes() {
+void Lander::DrawCollisionBoxes() const {
   ofNoFill();
   ofSetColor(ofColor::hotPink);
 
   for (const auto& box : collision_boxes_) {
     box.Draw();
   }
-}
-
-void Lander::Integrate() {
-  // FIXME replace 1 / 60 with either:
-  // - 1 / ofGetFrameRate() -> Lander disappears
-  // - 1 / kTargetFrameRate -> Lander does not move
-
-  position_ += velocity_ * 1 / 60;
-  velocity_ += acceleration_ * 1 / 60;
-  velocity_ *= Constants::kLanderVelocityDamping;
-  acceleration_ *= Constants::kLanderAccelerationDamping;
 }
