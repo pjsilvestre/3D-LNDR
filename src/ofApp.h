@@ -4,7 +4,7 @@
  * @author Kevin M. Smith (CS 134 SJSU)
  * @author Patrick Silvestre
  *
- * TODO lander physics (gravity, turbulence)
+ * TODO lander physics (turbulence)
  * TODO lander control (rotation along up axis)
  * TODO lander exhaust using particle emitters and shaders
  * TODO altitude detection using ray intersection

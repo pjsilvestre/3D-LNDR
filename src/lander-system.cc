@@ -1,10 +1,13 @@
 #include "lander-system.h"
 
-LanderSystem::LanderSystem() { particles_.push_back(lander_); }
+LanderSystem::LanderSystem() {
+  particles_.push_back(&lander_);
+  forces_.push_back(&gravity_force_);
+}
 
 void LanderSystem::Update(const Octree& octree) {
   lander_.Update(octree);
-  // TODO add gravity
+  ParticleSystem::Update();
 }
 
 void LanderSystem::ForwardThrust() {

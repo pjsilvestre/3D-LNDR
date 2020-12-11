@@ -8,10 +8,10 @@ class ParticleSystem {
   void Update();
 
   void AddForce(ParticleForce* particle_force);
-  void AddParticle(const Particle& particle);
+  void AddParticle(Particle* particle);
 
  protected:
-  vector<Particle> particles_;
+  vector<Particle*> particles_;
   vector<ParticleForce*> forces_;
 
   void Integrate();

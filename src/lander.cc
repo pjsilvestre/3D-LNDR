@@ -20,8 +20,6 @@ void Lander::Update(const Octree& octree) {
     transformation_matrix_ = glm::translate(glm::mat4(1.0f), position_);
     collision_boxes_.clear();
     octree.Intersect(bounds_, octree.root_, collision_boxes_);
-
-    Integrate();
   }
 }
 
