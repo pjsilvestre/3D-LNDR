@@ -18,7 +18,7 @@
 #pragma once
 
 #include "glm/gtx/intersect.hpp"
-#include "lander.h"
+#include "lander-system.h"
 #include "octree.h"
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
@@ -82,7 +82,7 @@ class ofApp : public ofBaseApp {
 
   ofEasyCam cam_;
   ofxAssimpModelLoader mars_;
-  Lander lander_;
+  LanderSystem lander_system_;
   ofLight light_;
 
   ofxIntSlider num_octree_levels_;

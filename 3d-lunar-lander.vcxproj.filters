@@ -67,7 +67,18 @@
     <ClCompile Include="src\constants.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\particle.cc" />
+    <ClCompile Include="src\particle.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\particle-system.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\particle-force.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lander-system.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -306,7 +317,18 @@
     <ClInclude Include="src\constants.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\particle.h" />
+    <ClInclude Include="src\particle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\particle-system.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\particle-force.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lander-system.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

@@ -61,7 +61,7 @@ void ofApp::InitializeLighting() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() { lander_.Update(octree_); }
+void ofApp::update() { lander_system_.Update(octree_); }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
@@ -76,14 +76,14 @@ void ofApp::draw() {
   if (terrain_selected_) {
     DrawAxis(glm::vec3(0.0f));
   } else {
-    DrawAxis(lander_.get_position());
+    DrawAxis(lander_system_.get_position());
   }
 
   ofEnableLighting();
   mars_.drawFaces();
 
-  if (lander_.is_loaded()) {
-    lander_.Draw();
+  if (lander_system_.is_loaded()) {
+    lander_system_.Draw();
   }
 
   if (terrain_points_displayed_) DrawTerrainPoints();
@@ -155,22 +155,22 @@ void ofApp::keyPressed(const int key) {
   switch (key) {
     case 'W':
     case 'w':
-      lander_.ForwardThrust();
+      lander_system_.ForwardThrust();
       break;
     case 'A':
     case 'a':
-      lander_.LeftwardThrust();
+      lander_system_.LeftwardThrust();
       break;
     case 'S':
     case 's':
-      lander_.BackwardThrust();
+      lander_system_.BackwardThrust();
       break;
     case 'D':
     case 'd':
-      lander_.RightwardThrust();
+      lander_system_.RightwardThrust();
       break;
     case ' ':
-      lander_.UpwardThrust();
+      lander_system_.UpwardThrust();
       break;
     case 'C':
     case 'c':
@@ -260,14 +260,14 @@ void ofApp::mouseDragged(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
   if (dragging_) {
-    auto lander_position = lander_.get_position();
+    auto lander_position = lander_system_.get_position();
     const auto mouse_position =
         GetMousePointOnPlane(lander_position, cam_.getZAxis());
     const auto delta = mouse_position - mouse_last_pos_;
 
     lander_position += delta;
 
-    lander_.set_position(lander_position);
+    lander_system_.set_position(lander_position);
     mouse_last_pos_ = mouse_position;
   } else {
     glm::vec3 unused_point;
@@ -327,22 +327,22 @@ bool ofApp::SelectOctreeNode(glm::vec3& return_point) {
 void ofApp::mousePressed(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
-  if (lander_.is_loaded()) {
+  if (lander_system_.is_loaded()) {
     const auto origin = cam_.getPosition();
     const auto mouse_world_space =
         cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
     const auto mouse_direction = glm::normalize(mouse_world_space - origin);
-    const auto hit =
-        lander_.get_bounds().Intersect(Ray(origin, mouse_direction), 0, 10000);
+    const auto hit = lander_system_.get_bounds().Intersect(
+        Ray(origin, mouse_direction), 0, 10000);
 
     if (hit) {
-      lander_.select();
+      lander_system_.select();
       terrain_selected_ = false;
       dragging_ = true;
       mouse_last_pos_ =
-          GetMousePointOnPlane(lander_.get_position(), cam_.getZAxis());
+          GetMousePointOnPlane(lander_system_.get_position(), cam_.getZAxis());
     } else {
-      lander_.unselect();
+      lander_system_.unselect();
       terrain_selected_ = true;
       dragging_ = false;
     }

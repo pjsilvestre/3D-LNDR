@@ -39,28 +39,6 @@ void Lander::Draw() {
   }
 }
 
-void Lander::UpwardThrust() {
-  forces_ += glm::vec3(0.0f, constants::kParticleInitialAcceleration, 0.0f);
-}
-
-void Lander::ForwardThrust() {
-  forces_  += glm::vec3(constants::kParticleInitialAcceleration, 0.0f, 0.0f);
-}
-
-void Lander::BackwardThrust() {
-  forces_ += glm::vec3(-constants::kParticleInitialAcceleration, 0.0f, 0.0f);
-}
-
-void Lander::LeftwardThrust() {
-  forces_ += glm::vec3(0.0f, 0.0f, -constants::kParticleInitialAcceleration);
-}
-
-void Lander::RightwardThrust() {
-  forces_ += glm::vec3(0.0f, 0.0f, constants::kParticleInitialAcceleration);
-}
-
-//-Private Methods----------------------------------------------
-
 void Lander::DrawBounds() const {
   ofSetColor(ofColor::white);
   bounds_.Draw();
