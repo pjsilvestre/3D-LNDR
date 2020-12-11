@@ -27,6 +27,8 @@ class LanderSystem : public ParticleSystem {
   void BackwardThrust();
   void RightwardThrust();
   void UpwardThrust();
+  void YawLeft();
+  void YawRight();
 
  private:
   Lander lander_;

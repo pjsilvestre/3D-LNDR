@@ -7,8 +7,8 @@ void ofApp::setup() {
   ofSetVerticalSync(true);
   ofSetFrameRate(60);
 
-  cam_.setDistance(10);
-  cam_.setFov(65.5f);
+  cam_.setDistance(50.0f);
+  cam_.setFov(75.0f);
   cam_.setNearClip(0.1f);
 
   InitializeLighting();
@@ -135,6 +135,14 @@ void ofApp::keyPressed(const int key) {
       break;
     case ' ':
       lander_system_.UpwardThrust();
+      break;
+    case 'Q':
+    case 'q':
+      lander_system_.YawLeft();
+      break;
+    case 'E':
+    case 'e':
+      lander_system_.YawRight();
       break;
     case 'C':
     case 'c':

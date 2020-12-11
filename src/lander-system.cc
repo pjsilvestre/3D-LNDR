@@ -11,33 +11,46 @@ void LanderSystem::Update(const Octree& octree) {
 
   if (lander_.collision_boxes_.size() >= 250) {
     // assumption: perfectly elastic collision
-    lander_.forces_ += -lander_.velocity_;
+    lander_.positional_forces_ += -lander_.velocity_;
   }
 
   ParticleSystem::Update();
 }
 
 void LanderSystem::ForwardThrust() {
-  lander_.forces_ +=
-      glm::vec3(constants::kParticleInitialAcceleration, 0.0f, 0.0f);
+  lander_.positional_forces_ += glm::rotateY(
+      glm::vec3(constants::kParticleInitialAcceleration, 0.0f, 0.0f),
+      glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::LeftwardThrust() {
-  lander_.forces_ +=
-      glm::vec3(0.0f, 0.0f, -constants::kParticleInitialAcceleration);
+  lander_.positional_forces_ += glm::rotateY(
+      glm::vec3(0.0f, 0.0f, -constants::kParticleInitialAcceleration),
+      glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::BackwardThrust() {
-  lander_.forces_ +=
-      glm::vec3(-constants::kParticleInitialAcceleration, 0.0f, 0.0f);
+  lander_.positional_forces_ += glm::rotateY(
+      glm::vec3(-constants::kParticleInitialAcceleration, 0.0f, 0.0f),
+      glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::RightwardThrust() {
-  lander_.forces_ +=
-      glm::vec3(0.0f, 0.0f, constants::kParticleInitialAcceleration);
+  lander_.positional_forces_ += glm::rotateY(
+      glm::vec3(0.0f, 0.0f, constants::kParticleInitialAcceleration),
+      glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::UpwardThrust() {
-  lander_.forces_ +=
-      glm::vec3(0.0f, constants::kParticleInitialAcceleration, 0.0f);
+  lander_.positional_forces_ += glm::rotateY(
+      glm::vec3(0.0f, constants::kParticleInitialAcceleration, 0.0f),
+      glm::radians(lander_.orientation_));
+}
+
+void LanderSystem::YawLeft() {
+  lander_.rotational_forces_ += constants::kParticleInitialAngularAcceleration;
+}
+
+void LanderSystem::YawRight() {
+  lander_.rotational_forces_ -= constants::kParticleInitialAngularAcceleration;
 }

@@ -18,7 +18,12 @@ void Lander::Update(const Octree& octree) {
   if (loaded_) {
     bounds_ =
         Box(model_.getSceneMin() + position_, model_.getSceneMax() + position_);
+
     transformation_matrix_ = glm::translate(glm::mat4(1.0f), position_);
+    transformation_matrix_ =
+        glm::rotate(transformation_matrix_, glm::radians(orientation_),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
+
     collision_boxes_.clear();
     octree.Intersect(bounds_, octree.root_, collision_boxes_);
 
