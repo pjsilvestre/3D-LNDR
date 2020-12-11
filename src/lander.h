@@ -22,10 +22,15 @@ class Lander : public Particle {
   void DrawBounds() const;
   void DrawCollisionBoxes() const;
 
+  bool altimeter_enabled_ = true;
   bool loaded_ = false;
+  bool terrain_point_selected_ = false;
   bool selected_ = false;
+  float altitude_ = 0.0f;
 
   ofxAssimpModelLoader model_;
+  glm::vec3 terrain_point_;
   Box bounds_;
   vector<Box> collision_boxes_;
+  TreeNode selected_node_;
 };

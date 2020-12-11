@@ -7,7 +7,6 @@
  * TODO lander physics (turbulence)
  * TODO lander control (rotation along up axis)
  * TODO lander exhaust using particle emitters and shaders
- * TODO altitude detection using ray intersection
  * TODO terrain lighting with 3+ lights, lander lighting with 1+ lights
  * TODO cameras (lander tracking camera, lander onboard camera, easycam)
  * TODO sound (thrust)
@@ -32,9 +31,9 @@ class ofApp : public ofBaseApp {
   void update() override;
 
   void draw() override;
+  void DrawAltimeterGauge() const;
   void DrawAxis(const glm::vec3& location);
   void DrawTerrainPoints();
-  void DrawPointSelected();
   void DrawOctree();
 
   void keyPressed(int key) override;
@@ -48,7 +47,6 @@ class ofApp : public ofBaseApp {
   void mouseDragged(int x, int y, int button) override;
   glm::vec3 GetMousePointOnPlane(const glm::vec3& plane_origin,
                                  const glm::vec3& plane_normal);
-  bool SelectOctreeNode(glm::vec3& return_point);
 
   void mousePressed(int x, int y, int button) override;
 
@@ -72,9 +70,8 @@ class ofApp : public ofBaseApp {
   bool dragging_{false};
 
   bool terrain_selected_{true};
-  bool point_selected_{false};
 
-  bool gui_displayed_{true};
+  bool gui_displayed_{false};
   bool terrain_points_displayed_{false};
   bool leaf_nodes_displayed_{false};
   bool octree_displayed_{false};
@@ -89,6 +86,5 @@ class ofApp : public ofBaseApp {
 
   glm::vec3 mouse_last_pos_;
 
-  TreeNode selected_node_;
   Octree octree_;
 };

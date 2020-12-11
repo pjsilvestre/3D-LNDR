@@ -68,6 +68,7 @@ void ofApp::draw() {
 
   glDepthMask(false);
   if (gui_displayed_) gui_.draw();
+  if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   glDepthMask(true);
 
   cam_.begin();
@@ -87,11 +88,24 @@ void ofApp::draw() {
 
   if (terrain_points_displayed_) DrawTerrainPoints();
 
-  if (point_selected_) DrawPointSelected();
-
   if (octree_displayed_) DrawOctree();
 
   cam_.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::DrawAltimeterGauge() const {
+  // TODO replace bitmap string with truetype string
+
+  const auto altimeter_message =
+      "altitude: " + to_string(lander_system_.get_altitude());
+  const ofBitmapFont font;
+  const auto bounding_box = font.getBoundingBox(altimeter_message, 0, 0);
+  ofSetColor(ofColor::white);
+  ofDrawBitmapString(
+      altimeter_message,
+      glm::vec3(ofGetWidth() - (bounding_box.width / 2.0f + 80.0f),
+                10.0f + bounding_box.height / 2.0f, 0.0f));
 }
 
 //--------------------------------------------------------------
@@ -122,14 +136,6 @@ void ofApp::DrawTerrainPoints() {
   glPointSize(3.0f);
   ofSetColor(ofColor::green);
   mars_.drawVertices();
-}
-
-//--------------------------------------------------------------
-void ofApp::DrawPointSelected() {
-  const auto point = octree_.mesh_.getVertex(selected_node_.points_[0]);
-  const auto direction = point - cam_.getPosition();
-  ofSetColor(ofColor::green);
-  ofDrawSphere(point, .02f * glm::length(direction));
 }
 
 //--------------------------------------------------------------
@@ -210,6 +216,14 @@ void ofApp::keyPressed(const int key) {
     case 'v':
       TogglePointsDisplay();
       break;
+    case 'X':
+    case 'x':
+      if (lander_system_.altimeter_enabled()) {
+        lander_system_.disable_altimeter();
+      } else {
+        lander_system_.enable_altimeter();
+      }
+      break;
     case OF_KEY_ALT:
       cam_.enableMouseInput();
       alt_key_down_ = true;
@@ -268,9 +282,6 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
     lander_system_.set_position(lander_position);
     mouse_last_pos_ = mouse_position;
-  } else {
-    // glm::vec3 unused_point;
-    // SelectOctreeNode(unused_point);
   }
 }
 
@@ -302,27 +313,6 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
 }
 
 //--------------------------------------------------------------
-bool ofApp::SelectOctreeNode(glm::vec3& return_point) {
-  const auto mouse = glm::vec3(mouseX, mouseY, 0.0f);
-  const auto ray_origin = cam_.screenToWorld(mouse);
-  const auto ray_direction = glm::normalize(ray_origin - cam_.getPosition());
-  const auto mouse_ray = Ray(ray_origin, ray_direction);
-
-  const auto before_point_selected = ofGetElapsedTimeMillis();
-  point_selected_ = octree_.Intersect(mouse_ray, octree_.root_, selected_node_);
-  const auto after_point_selected = ofGetElapsedTimeMillis();
-  const auto selection_time = after_point_selected - before_point_selected;
-
-  if (point_selected_) {
-    return_point = octree_.mesh_.getVertex(selected_node_.points_[0]);
-    cout << "point selected in " << selection_time << "ms ("
-         << selection_time / 1000.0f << "s)" << endl;
-  }
-
-  return point_selected_;
-}
-
-//--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
   if (cam_.getMouseInputEnabled()) return;
 
@@ -345,9 +335,6 @@ void ofApp::mousePressed(int x, int y, int button) {
       terrain_selected_ = true;
       dragging_ = false;
     }
-  } else {
-    // glm::vec3 unused_point;
-    // SelectOctreeNode(unused_point);
   }
 }
 

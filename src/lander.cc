@@ -21,6 +21,23 @@ void Lander::Update(const Octree& octree) {
     transformation_matrix_ = glm::translate(glm::mat4(1.0f), position_);
     collision_boxes_.clear();
     octree.Intersect(bounds_, octree.root_, collision_boxes_);
+
+    if (altimeter_enabled_) {
+      const auto ray_origin = position_;
+      const auto ray_direction = glm::vec3(0.0f, -1.0f, 0.0f);
+      const auto lander_ray = Ray(ray_origin, ray_direction);
+      const auto point_selected =
+          octree.Intersect(lander_ray, octree.root_, selected_node_);
+
+      if (point_selected) {
+        altitude_ = glm::length(position_ - terrain_point_);
+        terrain_point_selected_ = true;
+        terrain_point_ = octree.mesh_.getVertex(selected_node_.points_[0]);
+      } else {
+        terrain_point_selected_ = false;
+        terrain_point_ = glm::vec3(-10000.0f);
+      }
+    }
   }
 }
 
@@ -35,6 +52,11 @@ void Lander::Draw() {
   if (selected_) {
     DrawBounds();
     DrawCollisionBoxes();
+  }
+
+  if (altimeter_enabled_ && terrain_point_selected_) {
+    ofSetColor(ofColor::green);
+    ofDrawSphere(terrain_point_, 0.5f);
   }
 }
 
