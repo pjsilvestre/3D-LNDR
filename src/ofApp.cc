@@ -16,7 +16,7 @@ void ofApp::setup() {
     background_.setImageType(OF_IMAGE_GRAYSCALE);
   }
 
-  if (mars_.loadModel("geo/mars-low-5x-v2.obj")) {
+  if (mars_.loadModel("geo/mars.obj")) {
     mars_.setScaleNormalization(false);
     octree_ = Octree(mars_.getMesh(0), 10);
   } else {
