@@ -10,6 +10,11 @@ void ofApp::setup() {
   SetUpLighting();
   SetUpCameras();
 
+  if (!thrust_sound_player_.load("thrust.wav")) {
+    ofSystemAlertDialog("Thrust sound effect missing. Exiting...");
+    ofExit();
+  }
+
   if (background_.load("space.jpg")) {
     background_loaded_ = true;
     background_.resize(ofGetWidth(), ofGetHeight());
@@ -171,29 +176,36 @@ void ofApp::keyPressed(const int key) {
     case 'W':
     case 'w':
       lander_system_.ForwardThrust();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case 'A':
     case 'a':
       lander_system_.LeftwardThrust();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case 'S':
     case 's':
       lander_system_.BackwardThrust();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case 'D':
     case 'd':
       lander_system_.RightwardThrust();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case ' ':
       lander_system_.UpwardThrust();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case 'Q':
     case 'q':
       lander_system_.YawLeft();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case 'E':
     case 'e':
       lander_system_.YawRight();
+      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
       break;
     case 'X':
     case 'x':
@@ -222,15 +234,6 @@ void ofApp::keyPressed(const int key) {
     case '4':
       current_cam_ = &free_cam_;
       break;
-    case 'F':
-    case 'f':
-      ofToggleFullscreen();
-      break;
-    case 'H':
-    case 'h':
-      gui_displayed_ = !gui_displayed_;
-      break;
-      break;
     default:
       break;
   }
@@ -239,6 +242,21 @@ void ofApp::keyPressed(const int key) {
 //--------------------------------------------------------------
 void ofApp::keyReleased(const int key) {
   switch (key) {
+    case 'W':
+    case 'w':
+    case 'A':
+    case 'a':
+    case 'S':
+    case 's':
+    case 'D':
+    case 'd':
+    case ' ':
+    case 'Q':
+    case 'q':
+    case 'E':
+    case 'e':
+      thrust_sound_player_.stop();
+      break;
     default:
       break;
   }

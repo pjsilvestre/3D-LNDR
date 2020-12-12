@@ -62,6 +62,7 @@ class ofApp : public ofBaseApp {
   ofLight landing_area_point_light_;
   ofLight terrain_overhead_directional_light_;
 
+  ofSoundPlayer thrust_sound_player_;
 
   ofImage background_;
   ofxAssimpModelLoader mars_;
