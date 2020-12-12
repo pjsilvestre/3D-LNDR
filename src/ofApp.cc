@@ -110,7 +110,6 @@ void ofApp::draw() {
   current_cam_->end();
 
   ofDisableLighting();
-  if (gui_displayed_) gui_.draw();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   DrawControlHints();
 }

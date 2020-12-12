@@ -57,11 +57,11 @@ class ofApp : public ofBaseApp {
   ofCamera onboard_cam_;
   ofCamera tracking_cam_;
   ofEasyCam free_cam_;
-  ofxPanel gui_;
 
   ofLight lander_point_light_;
   ofLight landing_area_point_light_;
   ofLight terrain_overhead_directional_light_;
+
 
   ofImage background_;
   ofxAssimpModelLoader mars_;
