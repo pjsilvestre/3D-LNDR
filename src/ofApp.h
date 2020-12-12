@@ -6,7 +6,6 @@
  *
  * TODO lander physics (explosion upon impact velocity upon some threshold)
  * TODO lander exhaust using particle emitters and shaders
- * TODO sound (thrust)
  */
 
 #pragma once

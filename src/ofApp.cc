@@ -83,6 +83,8 @@ void ofApp::update() {
                         lander_position);
   tracking_cam_.lookAt(lander_position);
 
+  current_cam_ == &free_cam_ ? ofShowCursor() : ofHideCursor();
+
   lander_point_light_.setPosition(lander_position);
   lander_point_light_.orbitDeg(0.0f, 270.0f, 0.0f, lander_position);
 
@@ -216,10 +218,12 @@ void ofApp::keyPressed(const int key) {
       }
     case 'C':
     case 'c':
-      if (free_cam_.getMouseInputEnabled()) {
-        free_cam_.disableMouseInput();
-      } else {
-        free_cam_.enableMouseInput();
+      if (current_cam_ == &free_cam_) {
+        if (free_cam_.getMouseInputEnabled()) {
+          free_cam_.disableMouseInput();
+        } else {
+          free_cam_.enableMouseInput();
+        }
       }
       break;
     case '1':
