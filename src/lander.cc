@@ -58,11 +58,6 @@ void Lander::Draw() {
     DrawBounds();
     DrawCollisionBoxes();
   }
-
-  if (altimeter_enabled_ && terrain_point_selected_) {
-    ofSetColor(ofColor::green);
-    ofDrawSphere(terrain_point_, 0.5f);
-  }
 }
 
 void Lander::DrawBounds() const {
