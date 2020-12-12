@@ -10,12 +10,12 @@ void ofApp::setup() {
   SetUpLighting();
   SetUpCameras();
 
-  if (!thrust_sound_player_.load("thrust.wav")) {
+  if (!thrust_sound_player_.load("sounds/thrust.wav")) {
     ofSystemAlertDialog("Thrust sound effect missing. Exiting...");
     ofExit();
   }
 
-  if (background_.load("space.jpg")) {
+  if (background_.load("images/space.jpg")) {
     background_loaded_ = true;
     background_.resize(ofGetWidth(), ofGetHeight());
     background_.setImageType(OF_IMAGE_GRAYSCALE);
