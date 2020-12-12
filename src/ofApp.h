@@ -61,9 +61,14 @@ class ofApp : public ofBaseApp {
   ofEasyCam free_cam_;
   ofxPanel gui_;
 
+  ofLight lander_point_light_;
+  ofLight landing_area_point_light_;
+  ofLight terrain_overhead_directional_light_;
+
   ofImage background_;
   ofxAssimpModelLoader mars_;
 
+  glm::vec3 landing_area_ = glm::vec3(-5.0f, -10.0f, 40.0f);
   glm::vec3 mouse_last_pos_ = glm::vec3(0.0f);
 
   Octree octree_;

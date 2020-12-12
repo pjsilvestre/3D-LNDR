@@ -12,8 +12,8 @@ void ofApp::setup() {
 
   if (background_.load("space.jpg")) {
     background_loaded_ = true;
-    background_.setImageType(OF_IMAGE_GRAYSCALE);
     background_.resize(ofGetWidth(), ofGetHeight());
+    background_.setImageType(OF_IMAGE_GRAYSCALE);
   }
 
   mars_.loadModel("geo/mars-low-5x-v2.obj");
@@ -24,33 +24,31 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::SetUpLighting() {
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_LIGHTING);
+  ofSetSmoothLighting(true);
 
-  float ambient[]{0.5f, 0.5f, 0.5, 1.0f};
-  float diffuse[]{1.0f, 1.0f, 1.0f, 1.0f};
-  float position[]{5.0f, 5.0f, 5.0f, 0.0f};
+  lander_point_light_.setup();
+  lander_point_light_.setPointLight();
+  lander_point_light_.setAttenuation(1.0f, 0.01f, 0.01f);
+  lander_point_light_.enable();
 
-  glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-  glLightfv(GL_LIGHT0, GL_POSITION, position);
-  glEnable(GL_LIGHT0);
+  landing_area_point_light_.setup();
+  landing_area_point_light_.setPointLight();
+  landing_area_point_light_.rotateDeg(270, glm::vec3(1.0f, 0.0f, 0.0f));
+  auto above_landing_area = landing_area_;
+  above_landing_area.y += 5.0f;
+  landing_area_point_light_.setPosition(above_landing_area);
+  landing_area_point_light_.enable();
 
-  // glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
-  // glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-  // glLightfv(GL_LIGHT1, GL_POSITION, position);
-  // glEnable(GL_LIGHT1);
-
-  float lander_model_ambient[]{1.0f, 1.0f, 1.0f, 1.0f};
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lander_model_ambient);
-
-  float lander_model_two_side[]{GL_TRUE};
-  glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, lander_model_two_side);
+  terrain_overhead_directional_light_.setup();
+  terrain_overhead_directional_light_.setDirectional();
+  terrain_overhead_directional_light_.setPosition(0.0f, 100.0f, 0.0f);
+  terrain_overhead_directional_light_.enable();
 }
 
 //--------------------------------------------------------------
 void ofApp::SetUpCameras() {
   follow_cam_.setFov(67.5f);
+  follow_cam_.setNearClip(0.1f);
 
   onboard_cam_.setFov(90.0f);
   onboard_cam_.setNearClip(0.1f);
@@ -67,13 +65,16 @@ void ofApp::SetUpCameras() {
 void ofApp::update() {
   if (background_loaded_) background_.resize(ofGetWidth(), ofGetHeight());
 
+  const auto lander_position = lander_system_.get_position();
+
   follow_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, -45.0f, 25.0f,
-                       lander_system_.get_position());
-
+                       lander_position);
   onboard_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, 270.0f, 0.7f,
-                        lander_system_.get_position());
+                        lander_position);
+  tracking_cam_.lookAt(lander_position);
 
-  tracking_cam_.lookAt(lander_system_.get_position());
+  lander_point_light_.setPosition(lander_position);
+  lander_point_light_.orbitDeg(0.0f, 270.0f, 0.0f, lander_position);
 
   lander_system_.Update(octree_);
 }
@@ -84,7 +85,7 @@ void ofApp::draw() {
 
   if (background_loaded_) {
     glDepthMask(false);
-    ofSetColor(255, 255, 255, 100);
+    ofSetColor(64, 64, 64, 256);
     background_.draw(0.0f, 0.0f);
     glDepthMask(true);
   }
@@ -98,8 +99,12 @@ void ofApp::draw() {
     lander_system_.Draw();
   }
 
+  ofSetColor(128, 128, 128, 64);
+  ofDrawSphere(landing_area_, 7.0f);
+
   current_cam_->end();
 
+  ofDisableLighting();
   if (gui_displayed_) gui_.draw();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   DrawControlHints();
@@ -146,8 +151,8 @@ void ofApp::DrawAxis(const glm::vec3& location) const {
 //--------------------------------------------------------------
 void ofApp::DrawControlHints() const {
   const auto control_hint =
-      "movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
-      "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4";
+      "| movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
+      "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 |";
   const ofBitmapFont font;
   const auto bounding_box = font.getBoundingBox(control_hint, 0, 0);
   ofSetColor(ofColor::white);
