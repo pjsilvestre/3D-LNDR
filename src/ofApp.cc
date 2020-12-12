@@ -54,7 +54,9 @@ void ofApp::SetUpCameras() {
   onboard_cam_.setNearClip(0.1f);
 
   tracking_cam_.setFov(22.5f);
-  tracking_cam_.setPosition(-75.0f, 50.0f, 0.0f);
+  auto above_landing_area = landing_area_;
+  above_landing_area.y += 100.0f;
+  tracking_cam_.setPosition(above_landing_area);
 
   free_cam_.setFov(90.0f);
   free_cam_.setDistance(50.0f);
@@ -152,7 +154,8 @@ void ofApp::DrawAxis(const glm::vec3& location) const {
 void ofApp::DrawControlHints() const {
   const auto control_hint =
       "| movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
-      "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 |";
+      "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 | "
+      "enable/disable free cam mouse: c";
   const ofBitmapFont font;
   const auto bounding_box = font.getBoundingBox(control_hint, 0, 0);
   ofSetColor(ofColor::white);

@@ -6,8 +6,6 @@
  *
  * TODO lander physics (explosion upon impact velocity upon some threshold)
  * TODO lander exhaust using particle emitters and shaders
- * TODO terrain lighting with 3+ lights, lander lighting with 1+ lights
- * TODO cameras (lander tracking camera, lander onboard camera, easycam)
  * TODO sound (thrust)
  */
 
