@@ -109,6 +109,7 @@ void ofApp::draw() {
 
   if (gui_displayed_) gui_.draw();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
+  DrawControlHints();
 }
 
 //--------------------------------------------------------------
@@ -147,6 +148,18 @@ void ofApp::DrawAxis(const glm::vec3& location) const {
   ofDrawLine(glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
   ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::DrawControlHints() const {
+  const auto control_hint =
+      "movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
+      "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4";
+  const ofBitmapFont font;
+  const auto bounding_box = font.getBoundingBox(control_hint, 0, 0);
+  ofSetColor(ofColor::white);
+  ofDrawBitmapString(control_hint, 10.0f,
+                     ofGetHeight() - bounding_box.height / 2.0f);
 }
 
 //--------------------------------------------------------------

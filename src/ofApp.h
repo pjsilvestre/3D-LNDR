@@ -31,6 +31,7 @@ class ofApp : public ofBaseApp {
   void draw() override;
   void DrawAltimeterGauge() const;
   void DrawAxis(const glm::vec3& location) const;
+  void DrawControlHints() const;
 
   void keyPressed(int key) override;
   void keyReleased(int key) override;
