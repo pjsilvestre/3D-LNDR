@@ -23,7 +23,7 @@ class Lander : public Particle {
   void DrawBounds() const;
   void DrawCollisionBoxes() const;
 
-  bool altimeter_enabled_ = true;
+  bool altimeter_enabled_ = false;
   bool loaded_ = false;
   bool selected_ = false;
   bool terrain_point_selected_ = false;
