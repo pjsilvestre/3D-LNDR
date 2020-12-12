@@ -9,6 +9,8 @@ void ofApp::setup() {
 
   InitializeLighting();
 
+  onboard_cam_.setNearClip(0.1f);
+
   if (background_.load("space.jpg")) {
     background_loaded_ = true;
     background_.setImageType(OF_IMAGE_GRAYSCALE);
@@ -51,11 +53,11 @@ void ofApp::InitializeLighting() {
 void ofApp::update() {
   if (background_loaded_) background_.resize(ofGetWidth(), ofGetHeight());
 
-  follow_cam_.orbitDeg(270.0f, -45.0f, 25.0f, lander_system_.get_position());
-  follow_cam_.rotateAroundDeg(lander_system_.get_orientation(),
-                              glm::vec3(0.0f, 1.0f, 0.0f),
-                              lander_system_.get_position());
-  follow_cam_.lookAt(lander_system_.get_position());
+  follow_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, -45.0f, 25.0f,
+                       lander_system_.get_position());
+
+  onboard_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, 270.0f, 0.7f,
+                        lander_system_.get_position());
 
   lander_system_.Update(octree_);
 }
@@ -171,10 +173,10 @@ void ofApp::keyPressed(const int key) {
       }
     case 'C':
     case 'c':
-      if (easy_cam_.getMouseInputEnabled()) {
-        easy_cam_.disableMouseInput();
+      if (free_cam_.getMouseInputEnabled()) {
+        free_cam_.disableMouseInput();
       } else {
-        easy_cam_.enableMouseInput();
+        free_cam_.enableMouseInput();
       }
       break;
     case '1':
@@ -184,7 +186,10 @@ void ofApp::keyPressed(const int key) {
       current_cam_ = &onboard_cam_;
       break;
     case '3':
-      current_cam_ = &easy_cam_;
+      current_cam_ = &tracking_cam_;
+      break;
+    case '4':
+      current_cam_ = &free_cam_;
       break;
     case 'F':
     case 'f':
@@ -213,12 +218,12 @@ void ofApp::mouseMoved(int x, int y) {}
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-  if (easy_cam_.getMouseInputEnabled()) return;
+  if (free_cam_.getMouseInputEnabled()) return;
 
   if (dragging_) {
     auto lander_position = lander_system_.get_position();
     const auto mouse_position =
-        GetMousePointOnPlane(lander_position, easy_cam_.getZAxis());
+        GetMousePointOnPlane(lander_position, free_cam_.getZAxis());
     const auto delta = mouse_position - mouse_last_pos_;
 
     lander_position += delta;
@@ -235,9 +240,9 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
   // return intersection point.
 
   // ray setup
-  const auto origin = easy_cam_.getPosition();
+  const auto origin = free_cam_.getPosition();
   const auto mouse_world_space =
-      easy_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+      free_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
   const auto mouse_direction = glm::normalize(mouse_world_space - origin);
   float distance;
 
@@ -257,12 +262,12 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-  if (easy_cam_.getMouseInputEnabled()) return;
+  if (free_cam_.getMouseInputEnabled()) return;
 
   if (lander_system_.is_loaded()) {
-    const auto origin = easy_cam_.getPosition();
+    const auto origin = free_cam_.getPosition();
     const auto mouse_world_space =
-        easy_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+        free_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
     const auto mouse_direction = glm::normalize(mouse_world_space - origin);
     const auto hit = lander_system_.get_bounds().Intersect(
         Ray(origin, mouse_direction), 0, 10000);
@@ -272,7 +277,7 @@ void ofApp::mousePressed(int x, int y, int button) {
       terrain_selected_ = false;
       dragging_ = true;
       mouse_last_pos_ = GetMousePointOnPlane(lander_system_.get_position(),
-                                             easy_cam_.getZAxis());
+                                             free_cam_.getZAxis());
     } else {
       lander_system_.unselect();
       terrain_selected_ = true;

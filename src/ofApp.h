@@ -55,7 +55,8 @@ class ofApp : public ofBaseApp {
   ofCamera* current_cam_ = &follow_cam_;
   ofCamera follow_cam_;
   ofCamera onboard_cam_;
-  ofEasyCam easy_cam_;
+  ofCamera tracking_cam_;
+  ofEasyCam free_cam_;
   ofxPanel gui_;
 
   ofImage background_;
