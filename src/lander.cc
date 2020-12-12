@@ -10,7 +10,8 @@ Lander::Lander() {
     bounds_ =
         Box(model_.getSceneMin() + position_, model_.getSceneMax() + position_);
   } else {
-    cerr << "could not find geo/lander.obj" << endl;
+    ofSystemAlertDialog("Lander model missing. Exiting...");
+    ofExit();
   }
 }
 
