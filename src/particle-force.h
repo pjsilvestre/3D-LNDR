@@ -1,3 +1,10 @@
+/**
+ * @class ParticleForce
+ * @brief Encapsulates a ParticleForce to be applied on Particles in a
+ * ParticleSystem
+ * @author Patrick Silvestre
+ */
+
 #pragma once
 
 #include "particle.h"
@@ -32,6 +39,6 @@ class TurbulenceForce : public ParticleForce {
 class XZTurbulenceForce : public TurbulenceForce {
  public:
   XZTurbulenceForce(const glm::vec3& min_turbulence,
-                  const glm::vec3& max_turbulence);
+                    const glm::vec3& max_turbulence);
   void Update(Particle* particle) override;
 };

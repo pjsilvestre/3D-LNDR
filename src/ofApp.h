@@ -20,7 +20,6 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxGui.h"
-#include "utility.h"
 
 class ofApp : public ofBaseApp {
  public:
@@ -31,47 +30,34 @@ class ofApp : public ofBaseApp {
 
   void draw() override;
   void DrawAltimeterGauge() const;
-  void DrawAxis(const glm::vec3& location);
+  void DrawAxis(const glm::vec3& location) const;
 
   void keyPressed(int key) override;
-
   void keyReleased(int key) override;
-
   void mouseMoved(int x, int y) override;
 
   void mouseDragged(int x, int y, int button) override;
   glm::vec3 GetMousePointOnPlane(const glm::vec3& plane_origin,
-                                 const glm::vec3& plane_normal);
+                                 const glm::vec3& plane_normal) const;
 
   void mousePressed(int x, int y, int button) override;
-
   void mouseReleased(int x, int y, int button) override;
-
   void mouseEntered(int x, int y) override;
   void mouseExited(int x, int y) override;
   void windowResized(int w, int h) override;
-
-  void dragEvent(ofDragInfo dragInfo) override;
-
+  void dragEvent(ofDragInfo drag_info) override;
   void gotMessage(ofMessage msg) override;
 
-  bool MouseIntersectPlane(const glm::vec3& plane_point,
-                           const glm::vec3& plane_normal,
-                           glm::vec3& intersection_point);
-
   bool dragging_{false};
-
   bool terrain_selected_{true};
-
   bool gui_displayed_{false};
 
   ofEasyCam cam_;
   ofxAssimpModelLoader mars_;
-  LanderSystem lander_system_;
-
   ofxPanel gui_;
 
-  glm::vec3 mouse_last_pos_;
+  glm::vec3 mouse_last_pos_ = glm::vec3(0.0f);
 
   Octree octree_;
+  LanderSystem lander_system_;
 };

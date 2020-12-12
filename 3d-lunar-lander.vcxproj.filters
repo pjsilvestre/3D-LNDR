@@ -55,9 +55,6 @@
     <ClCompile Include="src\ofApp.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\utility.cc">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\ray.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -306,9 +303,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\ray.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\utility.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\lander.h">

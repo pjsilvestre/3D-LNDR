@@ -10,7 +10,7 @@ void LanderSystem::Update(const Octree& octree) {
   lander_.Update(octree);
 
   if (lander_.collision_boxes_.size() >= 250) {
-    // assumption: perfectly elastic collision
+    // assumption: relatively perfect elastic collision
     lander_.positional_forces_ += -lander_.velocity_;
   }
 

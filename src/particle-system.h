@@ -1,3 +1,9 @@
+/**
+ * @class ParticleSystem
+ * @brief Encapsulates a collection of Particles and the ParticleForces applied on them
+ * @author Patrick Silvestre
+ */
+
 #pragma once
 
 #include "particle-force.h"

@@ -1,6 +1,7 @@
 /**
  * @class Lander
- * @brief TODO
+ * @brief Encapsulates a Lander, which is a Particle with an associated Lander
+ * model and associated functionality
  * @author Patrick Silvestre
  */
 

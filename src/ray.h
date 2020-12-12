@@ -17,8 +17,8 @@ class Ray {
   Ray() = delete;
   Ray(const glm::vec3& origin, const glm::vec3& direction);
 
-  glm::vec3 origin_;
-  glm::vec3 direction_;
-  glm::vec3 inverse_direction_;
-  int sign_[3];
+  int sign_[3] = {0, 0, 0};
+  glm::vec3 direction_ = glm::vec3(0.0f);
+  glm::vec3 inverse_direction_ = glm::vec3(0.0f);
+  glm::vec3 origin_ = glm::vec3(0.0f);
 };

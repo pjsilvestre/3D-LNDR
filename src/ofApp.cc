@@ -63,7 +63,9 @@ void ofApp::draw() {
   if (terrain_selected_) {
     DrawAxis(glm::vec3(0.0f));
   } else {
-    DrawAxis(lander_system_.get_position());
+    if (lander_system_.is_loaded()) {
+      DrawAxis(lander_system_.get_position());
+    }
   }
 
   ofEnableLighting();
@@ -92,7 +94,7 @@ void ofApp::DrawAltimeterGauge() const {
 }
 
 //--------------------------------------------------------------
-void ofApp::DrawAxis(const glm::vec3& location) {
+void ofApp::DrawAxis(const glm::vec3& location) const {
   // Draw an XYZ axis in RGB at world (0,0,0) for reference.
   ofSetLineWidth(1.0);
 
@@ -213,7 +215,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
-                                      const glm::vec3& plane_normal) {
+                                      const glm::vec3& plane_normal) const {
   // intersect the mouse ray with the plane normal to the camera
   // return intersection point.
 
@@ -277,18 +279,7 @@ void ofApp::mouseExited(int x, int y) {}
 void ofApp::windowResized(int w, int h) {}
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo) {}
+void ofApp::dragEvent(ofDragInfo drag_info) {}
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg) {}
-
-//--------------------------------------------------------------
-bool ofApp::MouseIntersectPlane(const glm::vec3& plane_point,
-                                const glm::vec3& plane_normal,
-                                glm::vec3& intersection_point) {
-  const auto ray_origin = cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0.0f));
-  const auto ray_direction = glm::normalize(ray_origin - cam_.getPosition());
-
-  return Utility::RayIntersectPlane(ray_origin, ray_direction, plane_point,
-                                    plane_normal, intersection_point);
-}
