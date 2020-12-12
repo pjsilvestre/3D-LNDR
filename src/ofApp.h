@@ -48,13 +48,16 @@ class ofApp : public ofBaseApp {
   void dragEvent(ofDragInfo drag_info) override;
   void gotMessage(ofMessage msg) override;
 
-  bool dragging_{false};
-  bool terrain_selected_{true};
-  bool gui_displayed_{false};
+  bool background_loaded_ = false;
+  bool dragging_ = false;
+  bool terrain_selected_ = true;
+  bool gui_displayed_ = false;
 
   ofEasyCam cam_;
-  ofxAssimpModelLoader mars_;
   ofxPanel gui_;
+
+  ofImage background_;
+  ofxAssimpModelLoader mars_;
 
   glm::vec3 mouse_last_pos_ = glm::vec3(0.0f);
 

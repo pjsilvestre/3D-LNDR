@@ -10,13 +10,19 @@ void ofApp::setup() {
   cam_.setDistance(50.0f);
   cam_.setFov(75.0f);
   cam_.setNearClip(0.1f);
+  gui_.setup();
 
   InitializeLighting();
+
+  if (background_.load("space.jpg")) {
+    background_loaded_ = true;
+    background_.setImageType(OF_IMAGE_GRAYSCALE);
+    background_.resize(ofGetWidth(), ofGetHeight());
+  }
 
   mars_.loadModel("geo/mars-low-5x-v2.obj");
   mars_.setScaleNormalization(false);
 
-  gui_.setup();
   octree_ = Octree(mars_.getMesh(0), 10);
 }
 
@@ -47,16 +53,22 @@ void ofApp::InitializeLighting() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() { lander_system_.Update(octree_); }
+void ofApp::update() {
+  if (background_loaded_) background_.resize(ofGetWidth(), ofGetHeight());
+
+  lander_system_.Update(octree_);
+}
 
 //--------------------------------------------------------------
 void ofApp::draw() {
   ofBackground(ofColor::black);
 
-  glDepthMask(false);
-  if (gui_displayed_) gui_.draw();
-  if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
-  glDepthMask(true);
+  if (background_loaded_) {
+    glDepthMask(false);
+    ofSetColor(255, 255, 255, 100);
+    background_.draw(0.0f, 0.0f);
+    glDepthMask(true);
+  }
 
   cam_.begin();
 
@@ -76,6 +88,9 @@ void ofApp::draw() {
   }
 
   cam_.end();
+
+  if (gui_displayed_) gui_.draw();
+  if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
 }
 
 //--------------------------------------------------------------
