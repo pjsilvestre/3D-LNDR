@@ -19,6 +19,7 @@ class LanderSystem : public ParticleSystem {
   void Update(const Octree& octree);
 
   // Particle setters, getters
+  float get_orientation() const { return lander_.orientation_; }
   void set_position(const glm::vec3& position) { lander_.position_ = position; }
   glm::vec3 get_position() const { return lander_.position_; }
 

@@ -9,7 +9,6 @@
  * TODO terrain lighting with 3+ lights, lander lighting with 1+ lights
  * TODO cameras (lander tracking camera, lander onboard camera, easycam)
  * TODO sound (thrust)
- * TODO background starfield
  */
 
 #pragma once
@@ -53,7 +52,10 @@ class ofApp : public ofBaseApp {
   bool terrain_selected_ = true;
   bool gui_displayed_ = false;
 
-  ofEasyCam cam_;
+  ofCamera* current_cam_ = &follow_cam_;
+  ofCamera follow_cam_;
+  ofCamera onboard_cam_;
+  ofEasyCam easy_cam_;
   ofxPanel gui_;
 
   ofImage background_;

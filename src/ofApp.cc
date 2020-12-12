@@ -7,11 +7,6 @@ void ofApp::setup() {
   ofSetVerticalSync(true);
   ofSetFrameRate(60);
 
-  cam_.setDistance(50.0f);
-  cam_.setFov(75.0f);
-  cam_.setNearClip(0.1f);
-  gui_.setup();
-
   InitializeLighting();
 
   if (background_.load("space.jpg")) {
@@ -56,6 +51,12 @@ void ofApp::InitializeLighting() {
 void ofApp::update() {
   if (background_loaded_) background_.resize(ofGetWidth(), ofGetHeight());
 
+  follow_cam_.orbitDeg(270.0f, -45.0f, 25.0f, lander_system_.get_position());
+  follow_cam_.rotateAroundDeg(lander_system_.get_orientation(),
+                              glm::vec3(0.0f, 1.0f, 0.0f),
+                              lander_system_.get_position());
+  follow_cam_.lookAt(lander_system_.get_position());
+
   lander_system_.Update(octree_);
 }
 
@@ -70,7 +71,7 @@ void ofApp::draw() {
     glDepthMask(true);
   }
 
-  cam_.begin();
+  current_cam_->begin();
 
   if (terrain_selected_) {
     DrawAxis(glm::vec3(0.0f));
@@ -87,7 +88,7 @@ void ofApp::draw() {
     lander_system_.Draw();
   }
 
-  cam_.end();
+  current_cam_->end();
 
   if (gui_displayed_) gui_.draw();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
@@ -161,13 +162,29 @@ void ofApp::keyPressed(const int key) {
     case 'e':
       lander_system_.YawRight();
       break;
+    case 'X':
+    case 'x':
+      if (lander_system_.altimeter_enabled()) {
+        lander_system_.disable_altimeter();
+      } else {
+        lander_system_.enable_altimeter();
+      }
     case 'C':
     case 'c':
-      if (cam_.getMouseInputEnabled()) {
-        cam_.disableMouseInput();
+      if (easy_cam_.getMouseInputEnabled()) {
+        easy_cam_.disableMouseInput();
       } else {
-        cam_.enableMouseInput();
+        easy_cam_.enableMouseInput();
       }
+      break;
+    case '1':
+      current_cam_ = &follow_cam_;
+      break;
+    case '2':
+      current_cam_ = &onboard_cam_;
+      break;
+    case '3':
+      current_cam_ = &easy_cam_;
       break;
     case 'F':
     case 'f':
@@ -177,20 +194,6 @@ void ofApp::keyPressed(const int key) {
     case 'h':
       gui_displayed_ = !gui_displayed_;
       break;
-    case 'R':
-    case 'r':
-      cam_.reset();
-      break;
-    case 'X':
-    case 'x':
-      if (lander_system_.altimeter_enabled()) {
-        lander_system_.disable_altimeter();
-      } else {
-        lander_system_.enable_altimeter();
-      }
-      break;
-    case OF_KEY_ALT:
-      cam_.enableMouseInput();
       break;
     default:
       break;
@@ -200,9 +203,6 @@ void ofApp::keyPressed(const int key) {
 //--------------------------------------------------------------
 void ofApp::keyReleased(const int key) {
   switch (key) {
-    case OF_KEY_ALT:
-      cam_.disableMouseInput();
-      break;
     default:
       break;
   }
@@ -213,12 +213,12 @@ void ofApp::mouseMoved(int x, int y) {}
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button) {
-  if (cam_.getMouseInputEnabled()) return;
+  if (easy_cam_.getMouseInputEnabled()) return;
 
   if (dragging_) {
     auto lander_position = lander_system_.get_position();
     const auto mouse_position =
-        GetMousePointOnPlane(lander_position, cam_.getZAxis());
+        GetMousePointOnPlane(lander_position, easy_cam_.getZAxis());
     const auto delta = mouse_position - mouse_last_pos_;
 
     lander_position += delta;
@@ -235,9 +235,9 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
   // return intersection point.
 
   // ray setup
-  const auto origin = cam_.getPosition();
+  const auto origin = easy_cam_.getPosition();
   const auto mouse_world_space =
-      cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+      easy_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
   const auto mouse_direction = glm::normalize(mouse_world_space - origin);
   float distance;
 
@@ -257,12 +257,12 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button) {
-  if (cam_.getMouseInputEnabled()) return;
+  if (easy_cam_.getMouseInputEnabled()) return;
 
   if (lander_system_.is_loaded()) {
-    const auto origin = cam_.getPosition();
+    const auto origin = easy_cam_.getPosition();
     const auto mouse_world_space =
-        cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+        easy_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
     const auto mouse_direction = glm::normalize(mouse_world_space - origin);
     const auto hit = lander_system_.get_bounds().Intersect(
         Ray(origin, mouse_direction), 0, 10000);
@@ -271,8 +271,8 @@ void ofApp::mousePressed(int x, int y, int button) {
       lander_system_.select();
       terrain_selected_ = false;
       dragging_ = true;
-      mouse_last_pos_ =
-          GetMousePointOnPlane(lander_system_.get_position(), cam_.getZAxis());
+      mouse_last_pos_ = GetMousePointOnPlane(lander_system_.get_position(),
+                                             easy_cam_.getZAxis());
     } else {
       lander_system_.unselect();
       terrain_selected_ = true;
