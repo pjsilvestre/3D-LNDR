@@ -11,6 +11,8 @@ void ofApp::setup() {
 
   onboard_cam_.setNearClip(0.1f);
 
+  tracking_cam_.setPosition(-75.0f, 50.0f, 0.0f);
+
   if (background_.load("space.jpg")) {
     background_loaded_ = true;
     background_.setImageType(OF_IMAGE_GRAYSCALE);
@@ -58,6 +60,8 @@ void ofApp::update() {
 
   onboard_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, 270.0f, 0.7f,
                         lander_system_.get_position());
+
+  tracking_cam_.lookAt(lander_system_.get_position());
 
   lander_system_.Update(octree_);
 }
