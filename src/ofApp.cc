@@ -8,14 +8,7 @@ void ofApp::setup() {
   ofSetFrameRate(60);
 
   InitializeLighting();
-
-  follow_cam_.setFov(67.5f);
-
-  onboard_cam_.setNearClip(0.1f);
-  onboard_cam_.setFov(90.0f);
-
-  tracking_cam_.setFov(22.5f);
-  tracking_cam_.setPosition(-75.0f, 50.0f, 0.0f);
+  InitializeCameras();
 
   if (background_.load("space.jpg")) {
     background_loaded_ = true;
@@ -53,6 +46,20 @@ void ofApp::InitializeLighting() {
 
   float lander_model_two_side[]{GL_TRUE};
   glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE, lander_model_two_side);
+}
+
+//--------------------------------------------------------------
+void ofApp::InitializeCameras() {
+  follow_cam_.setFov(67.5f);
+
+  onboard_cam_.setFov(90.0f);
+  onboard_cam_.setNearClip(0.1f);
+
+  tracking_cam_.setFov(22.5f);
+  tracking_cam_.setPosition(-75.0f, 50.0f, 0.0f);
+
+  free_cam_.setFov(90.0f);
+  free_cam_.setDistance(50.0f);
 }
 
 //--------------------------------------------------------------
