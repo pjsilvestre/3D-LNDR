@@ -23,8 +23,8 @@
 class ofApp : public ofBaseApp {
  public:
   void setup() override;
-  void InitializeLighting();
-  void InitializeCameras();
+  void SetUpLighting();
+  void SetUpCameras();
 
   void update() override;
 

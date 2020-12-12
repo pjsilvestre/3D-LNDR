@@ -7,8 +7,8 @@ void ofApp::setup() {
   ofSetVerticalSync(true);
   ofSetFrameRate(60);
 
-  InitializeLighting();
-  InitializeCameras();
+  SetUpLighting();
+  SetUpCameras();
 
   if (background_.load("space.jpg")) {
     background_loaded_ = true;
@@ -23,7 +23,7 @@ void ofApp::setup() {
 }
 
 //--------------------------------------------------------------
-void ofApp::InitializeLighting() {
+void ofApp::SetUpLighting() {
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHTING);
 
@@ -49,7 +49,7 @@ void ofApp::InitializeLighting() {
 }
 
 //--------------------------------------------------------------
-void ofApp::InitializeCameras() {
+void ofApp::SetUpCameras() {
   follow_cam_.setFov(67.5f);
 
   onboard_cam_.setFov(90.0f);
@@ -60,6 +60,7 @@ void ofApp::InitializeCameras() {
 
   free_cam_.setFov(90.0f);
   free_cam_.setDistance(50.0f);
+  free_cam_.setNearClip(0.1f);
 }
 
 //--------------------------------------------------------------
@@ -89,14 +90,6 @@ void ofApp::draw() {
   }
 
   current_cam_->begin();
-
-  if (terrain_selected_) {
-    DrawAxis(glm::vec3(0.0f));
-  } else {
-    if (lander_system_.is_loaded()) {
-      DrawAxis(lander_system_.get_position());
-    }
-  }
 
   ofEnableLighting();
   mars_.drawFaces();
