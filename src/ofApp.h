@@ -68,6 +68,7 @@ class ofApp : public ofBaseApp {
   ofImage background_;
   ofxAssimpModelLoader mars_;
 
+  ofTexture particle_texture_;
   ofShader shader_;
 
   glm::vec3 landing_area_ = glm::vec3(-5.0f, -10.0f, 40.0f);

@@ -31,6 +31,11 @@ void ofApp::setup() {
     ofExit();
   }
 
+  if (!ofLoadImage(particle_texture_, "images/particle.png")) {
+    ofSystemAlertDialog("Particle texture missing. Exiting...");
+    ofExit();
+  }
+
 #ifdef TARGET_OPENGLES
   if (shader_.load("shaders-gles/shader")) shaders_loaded = true;
 #else
