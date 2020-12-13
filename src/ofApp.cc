@@ -23,9 +23,11 @@ void ofApp::LoadAssets() {
   }
 
   if (background_.load("images/space.jpg")) {
-    background_loaded_ = true;
     background_.resize(ofGetWidth(), ofGetHeight());
     background_.setImageType(OF_IMAGE_GRAYSCALE);
+  } else {
+    ofSystemAlertDialog("Background image missing. Exiting...");
+    ofExit();
   }
 
   if (mars_.loadModel("geo/mars.obj")) {
@@ -103,7 +105,7 @@ void ofApp::update() {
 
   current_cam_ == &free_cam_ ? ofShowCursor() : ofHideCursor();
 
-  if (background_loaded_) background_.resize(ofGetWidth(), ofGetHeight());
+  background_.resize(ofGetWidth(), ofGetHeight());
 
   lander_system_.Update(octree_);
 
@@ -135,24 +137,18 @@ void ofApp::UpdateLighting() {
 void ofApp::draw() {
   // SetUpVertexBuffer();
 
-  ofBackground(ofColor::black);
-
-  if (background_loaded_) {
-    ofDisableLighting();
-    glDepthMask(false);
-    ofSetColor(64, 64, 64, 256);
-    background_.draw(0.0f, 0.0f);
-    glDepthMask(true);
-    ofEnableLighting();
-  }
+  ofDisableLighting();
+  glDepthMask(false);
+  ofSetColor(64, 64, 64, 256);
+  background_.draw(0.0f, 0.0f);
+  glDepthMask(true);
+  ofEnableLighting();
 
   current_cam_->begin();
 
   mars_.drawFaces();
 
-  if (lander_system_.is_loaded()) {
-    lander_system_.Draw();
-  }
+  lander_system_.Draw();
 
   ofSetColor(128, 128, 128, 64);
   ofDrawSphere(landing_area_, 7.0f);
@@ -399,25 +395,23 @@ glm::vec3 ofApp::GetMousePointOnPlane(const glm::vec3& plane_origin,
 void ofApp::mousePressed(int x, int y, int button) {
   if (free_cam_.getMouseInputEnabled()) return;
 
-  if (lander_system_.is_loaded()) {
-    const auto origin = free_cam_.getPosition();
-    const auto mouse_world_space =
-        free_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
-    const auto mouse_direction = glm::normalize(mouse_world_space - origin);
-    const auto hit = lander_system_.get_bounds().Intersect(
-        Ray(origin, mouse_direction), 0, 10000);
+  const auto origin = free_cam_.getPosition();
+  const auto mouse_world_space =
+      free_cam_.screenToWorld(glm::vec3(mouseX, mouseY, 0));
+  const auto mouse_direction = glm::normalize(mouse_world_space - origin);
+  const auto hit = lander_system_.get_bounds().Intersect(
+      Ray(origin, mouse_direction), 0, 10000);
 
-    if (hit) {
-      lander_system_.select();
-      terrain_selected_ = false;
-      dragging_ = true;
-      mouse_last_pos_ = GetMousePointOnPlane(lander_system_.get_position(),
-                                             free_cam_.getZAxis());
-    } else {
-      lander_system_.unselect();
-      terrain_selected_ = true;
-      dragging_ = false;
-    }
+  if (hit) {
+    lander_system_.select();
+    terrain_selected_ = false;
+    dragging_ = true;
+    mouse_last_pos_ = GetMousePointOnPlane(lander_system_.get_position(),
+                                           free_cam_.getZAxis());
+  } else {
+    lander_system_.unselect();
+    terrain_selected_ = true;
+    dragging_ = false;
   }
 }
 

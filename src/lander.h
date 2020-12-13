@@ -24,7 +24,6 @@ class Lander : public Particle {
   void DrawCollisionBoxes() const;
 
   bool altimeter_enabled_ = false;
-  bool loaded_ = false;
   bool selected_ = false;
   bool terrain_point_selected_ = false;
   float altitude_ = 0.0f;

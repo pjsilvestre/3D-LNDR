@@ -26,7 +26,6 @@ class LanderSystem : public ParticleSystem {
   void enable_altimeter() { lander_.altimeter_enabled_ = true; }
   void disable_altimeter() { lander_.altimeter_enabled_ = false; }
   bool altimeter_enabled() const { return lander_.altimeter_enabled_; }
-  bool is_loaded() const { return lander_.loaded_; }
   void select() { lander_.selected_ = true; }
   void unselect() { lander_.selected_ = false; }
   float get_altitude() const { return lander_.altitude_; }

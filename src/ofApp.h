@@ -56,7 +56,6 @@ class ofApp : public ofBaseApp {
   void dragEvent(ofDragInfo drag_info) override;
   void gotMessage(ofMessage msg) override;
 
-  bool background_loaded_ = false;
   bool dragging_ = false;
   bool terrain_selected_ = true;
   bool gui_displayed_ = false;
