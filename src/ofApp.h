@@ -17,7 +17,7 @@
 #include "octree.h"
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
-#include "ofxGui.h"
+//#include "ofxGui.h"
 #include "particle-emitter.h"
 
 class ofApp : public ofBaseApp {
@@ -36,6 +36,7 @@ class ofApp : public ofBaseApp {
   void DrawAltimeterGauge() const;
   void DrawAxis(const glm::vec3& location) const;
   void DrawControlHints() const;
+  void DrawFuelGauge() const;
 
   void keyPressed(int key) override;
   void StartThrusterEffects();
@@ -61,6 +62,8 @@ class ofApp : public ofBaseApp {
   bool gui_displayed_ = false;
   bool shaders_loaded_ = false;
 
+  float fuel_ = 15.0f;
+
   ofCamera* current_cam_ = &follow_cam_;
   ofCamera follow_cam_;
   ofCamera onboard_cam_;
@@ -75,7 +78,7 @@ class ofApp : public ofBaseApp {
 
   ofSoundPlayer thrust_sound_player_;
 
-  ofTrueTypeFont altimeter_font_;
+  ofTrueTypeFont gauge_font_;
   ofTrueTypeFont control_hint_font_;
 
   ofxAssimpModelLoader mars_;

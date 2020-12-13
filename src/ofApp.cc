@@ -30,8 +30,7 @@ void ofApp::LoadAssets() {
     ofExit();
   }
 
-  if (!altimeter_font_.load("fonts/Source_Code_Pro/SourceCodePro-Black.ttf",
-                            20)) {
+  if (!gauge_font_.load("fonts/Source_Code_Pro/SourceCodePro-Black.ttf", 20)) {
     ofSystemAlertDialog("Font missing. Exiting...");
     ofExit();
   }
@@ -181,6 +180,7 @@ void ofApp::draw() {
 
   ofDisableLighting();
   ofDisableDepthTest();
+  DrawFuelGauge();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   DrawControlHints();
   ofEnableDepthTest();
@@ -212,11 +212,11 @@ void ofApp::DrawAltimeterGauge() const {
   const auto altimeter_message =
       "altitude: " + to_string(lander_system_.get_altitude());
   const auto bounding_box =
-      altimeter_font_.getStringBoundingBox(altimeter_message, 0, 0);
+      gauge_font_.getStringBoundingBox(altimeter_message, 0, 0);
   ofSetColor(255, 255, 255, 180);
-  altimeter_font_.drawString(altimeter_message,
-                             ofGetWidth() - (bounding_box.width + 50.0f),
-                             bounding_box.height + 50.0f);
+  gauge_font_.drawString(altimeter_message,
+                         ofGetWidth() - (bounding_box.width + 50.0f),
+                         bounding_box.height + 50.0f);
 }
 
 //--------------------------------------------------------------
@@ -257,39 +257,61 @@ void ofApp::DrawControlHints() const {
 }
 
 //--------------------------------------------------------------
+void ofApp::DrawFuelGauge() const {
+  string fuel_message;
+  if (fuel_ < 0.0f) {
+    fuel_message = "fuel: 0.0 seconds";
+  } else {
+    fuel_message = "fuel: " + to_string(fuel_) + " seconds";
+  }
+
+  const auto bounding_box =
+      gauge_font_.getStringBoundingBox(fuel_message, 0, 0);
+  ofSetColor(255, 255, 255, 180);
+  gauge_font_.drawString(fuel_message, 50.0f, bounding_box.height + 50.0f);
+}
+
+//--------------------------------------------------------------
 void ofApp::keyPressed(const int key) {
   switch (key) {
     case 'W':
     case 'w':
+      if (fuel_ < 0.0f) return;
       lander_system_.ForwardThrust();
       StartThrusterEffects();
       break;
     case 'A':
     case 'a':
+      if (fuel_ < 0.0f) return;
       lander_system_.LeftwardThrust();
       StartThrusterEffects();
       break;
     case 'S':
     case 's':
+      if (fuel_ < 0.0f) return;
       lander_system_.BackwardThrust();
       StartThrusterEffects();
       break;
     case 'D':
     case 'd':
+      if (fuel_ < 0.0f) return;
       lander_system_.RightwardThrust();
       StartThrusterEffects();
       break;
     case ' ':
+      if (fuel_ < 0.0f) return;
       lander_system_.UpwardThrust();
       StartThrusterEffects();
       break;
     case 'Q':
     case 'q':
+      if (fuel_ < 0.0f) return;
       lander_system_.YawLeft();
       StartThrusterEffects();
       break;
     case 'E':
     case 'e':
+      if (fuel_ < 0.0f) return;
       lander_system_.YawRight();
       StartThrusterEffects();
       break;
@@ -331,6 +353,7 @@ void ofApp::StartThrusterEffects() {
   if (!thruster_light_.getIsEnabled()) thruster_light_.enable();
   if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
   thruster_.Start();
+  fuel_ -= 1.0f / 30.0f;
 }
 
 //--------------------------------------------------------------
