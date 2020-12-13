@@ -14,7 +14,7 @@ class LanderSystem : public ParticleSystem {
  public:
   LanderSystem();
 
-  void Draw() { lander_.Draw(); }
+  void Draw();
   void Update(const Octree& octree);
 
   // Particle setters, getters

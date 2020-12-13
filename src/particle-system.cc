@@ -10,6 +10,12 @@ void ParticleSystem::Update() {
   UpdateForces();
 }
 
+void ParticleSystem::Draw() const {
+  for (const auto& particle : particles_) {
+    particle->Draw();
+  }
+}
+
 void ParticleSystem::AddForce(ParticleForce* particle_force) {
   if (particle_force == nullptr) {
     cerr << "ParticleSystem::AddForce() argument is null" << endl;

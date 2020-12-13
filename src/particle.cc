@@ -1,5 +1,10 @@
 #include "particle.h"
 
+void Particle::Draw() const {
+  ofSetColor(ofColor::white);
+  ofDrawSphere(position_, 0.1f);
+}
+
 float Particle::GetAge() const { return ofGetElapsedTimef() - spawn_time_; }
 
 void Particle::Integrate() {

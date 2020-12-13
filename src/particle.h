@@ -11,6 +11,8 @@
 
 class Particle {
  public:
+  virtual void Draw() const;
+
   void Integrate();
   float GetAge() const;
 

@@ -12,6 +12,7 @@
 class ParticleSystem {
  public:
   void Update();
+  void Draw() const;
 
   void AddForce(ParticleForce* particle_force);
   void AddParticle(Particle* particle);
