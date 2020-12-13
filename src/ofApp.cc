@@ -30,6 +30,17 @@ void ofApp::setup() {
     ofSystemAlertDialog("Mars model missing. Exiting...");
     ofExit();
   }
+
+#ifdef TARGET_OPENGLES
+  if (shader_.load("shaders-gles/shader")) shaders_loaded = true;
+#else
+  if (shader_.load("shaders/shader")) shaders_loaded_ = true;
+#endif
+
+  if (!shaders_loaded_) {
+    ofSystemAlertDialog("Shaders missing. Exiting...");
+    ofExit();
+  }
 }
 
 //--------------------------------------------------------------

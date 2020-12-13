@@ -120,6 +120,18 @@
     <Filter Include="addons\ofxGui\src">
       <UniqueIdentifier>{645E9533-4DCD-6179-1CDF-CB65}</UniqueIdentifier>
     </Filter>
+    <Filter Include="bin">
+      <UniqueIdentifier>{b336b1ca-7e52-4171-98b9-ec1bd1424f3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bin\data">
+      <UniqueIdentifier>{0556db90-87b5-4009-8534-46cc576f3124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bin\data\shaders">
+      <UniqueIdentifier>{8d377051-5fb1-40d8-a4a2-901ef119095d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bin\data\shader-gles">
+      <UniqueIdentifier>{e3d5337e-4029-479d-b8cb-d6906b0f3468}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\..\..\..\..\Misc Applications\of_v0.11.0_vs2017_release\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.h">
@@ -332,5 +344,19 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\data\shaders\shader.frag">
+      <Filter>bin\data\shaders</Filter>
+    </None>
+    <None Include="bin\data\shaders\shader.vert">
+      <Filter>bin\data\shaders</Filter>
+    </None>
+    <None Include="bin\data\shaders-gles\shader.frag">
+      <Filter>bin\data\shader-gles</Filter>
+    </None>
+    <None Include="bin\data\shaders-gles\shader.vert">
+      <Filter>bin\data\shader-gles</Filter>
+    </None>
   </ItemGroup>
 </Project>

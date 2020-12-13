@@ -51,6 +51,7 @@ class ofApp : public ofBaseApp {
   bool dragging_ = false;
   bool terrain_selected_ = true;
   bool gui_displayed_ = false;
+  bool shaders_loaded_ = false;
 
   ofCamera* current_cam_ = &follow_cam_;
   ofCamera follow_cam_;
@@ -66,6 +67,8 @@ class ofApp : public ofBaseApp {
 
   ofImage background_;
   ofxAssimpModelLoader mars_;
+
+  ofShader shader_;
 
   glm::vec3 landing_area_ = glm::vec3(-5.0f, -10.0f, 40.0f);
   glm::vec3 mouse_last_pos_ = glm::vec3(0.0f);

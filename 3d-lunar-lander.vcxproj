@@ -290,6 +290,12 @@
       <AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\data\shaders-gles\shader.frag" />
+    <None Include="bin\data\shaders-gles\shader.vert" />
+    <None Include="bin\data\shaders\shader.frag" />
+    <None Include="bin\data\shaders\shader.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ProjectExtensions>
     <VisualStudio>
