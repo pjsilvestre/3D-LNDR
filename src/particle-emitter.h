@@ -16,14 +16,24 @@ class ParticleEmitter {
   void Start();
   void Stop();
 
+  bool fired_ = false;
+  bool one_shot_ = false;
   bool started_ = false;
-  int group_size_ = 100;
-  int rate_ = 100;
+  int group_size_ = 10000;
+  int rate_ = 1000;
   float last_spawn_time_ = -1.0f;
-  glm::vec3 initial_velocity_ = glm::vec3(0.0f, -10.0f, 0.0f);
+  glm::vec3 initial_velocity_ = glm::vec3(0.0f);
   glm::vec3 position_ = glm::vec3(0.0f);
   ParticleSystem particle_system_;
 
  private:
-  void Spawn(float spawn_time);
+  virtual void Spawn(float spawn_time);
+};
+
+class ThrustParticleEmitter : public ParticleEmitter {
+ public:
+  ThrustParticleEmitter();
+
+ private:
+  void Spawn(float spawn_time) override;
 };

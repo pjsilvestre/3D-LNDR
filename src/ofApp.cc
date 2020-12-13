@@ -11,6 +11,8 @@ void ofApp::setup() {
   LoadAssets();
   SetUpCameras();
   SetUpLighting();
+
+  explosion_.one_shot_ = true;
 }
 
 //--------------------------------------------------------------
@@ -119,6 +121,8 @@ void ofApp::update() {
 
   background_.resize(ofGetWidth(), ofGetHeight());
 
+  explosion_.Update();
+
   if (!game_over_ && !successful_landing_) {
     lander_system_.Update(octree_);
 
@@ -158,6 +162,9 @@ void ofApp::CheckWinCondition() {
         game_over_ = true;
       }
     } else {
+      explosion_.position_ = lander_system_.get_position();
+      explosion_.Start();
+
       exploded_ = true;
       game_over_ = true;
     }
@@ -183,7 +190,11 @@ void ofApp::draw() {
     lander_system_.Draw();
     thruster_.Draw();
   } else {
-    if (successful_landing_) lander_system_.Draw();
+    if (successful_landing_) {
+      lander_system_.Draw();
+    } else {
+      explosion_.Draw();
+    }
   }
 
   if (game_over_) {
@@ -434,6 +445,7 @@ void ofApp::Reset() {
   successful_landing_ = false;
 
   lander_system_.Reset();
+  explosion_.fired_ = false;
 }
 
 //--------------------------------------------------------------

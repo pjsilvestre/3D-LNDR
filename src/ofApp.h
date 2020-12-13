@@ -99,5 +99,6 @@ class ofApp : public ofBaseApp {
 
   Octree octree_;
   LanderSystem lander_system_;
-  ParticleEmitter thruster_;
+  ThrustParticleEmitter thruster_;
+  ParticleEmitter explosion_;
 };
