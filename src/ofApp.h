@@ -83,6 +83,7 @@ class ofApp : public ofBaseApp {
   ofLight terrain_light_;
   ofLight thruster_light_;
 
+  ofSoundPlayer explosion_sound_player_;
   ofSoundPlayer thrust_sound_player_;
 
   ofTrueTypeFont gauge_font_;

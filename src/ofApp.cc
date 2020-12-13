@@ -25,6 +25,11 @@ void ofApp::LoadAssets() {
     ofExit();
   }
 
+  if (!explosion_sound_player_.load("sounds/explosion.wav")) {
+    ofSystemAlertDialog("Explosion sound effect missing. Exiting...");
+    ofExit();
+  }
+
   if (thrust_sound_player_.load("sounds/thrust.wav")) {
     thrust_sound_player_.setLoop(true);
   } else {
@@ -164,6 +169,7 @@ void ofApp::CheckWinCondition() {
     } else {
       explosion_.position_ = lander_system_.get_position();
       explosion_.Start();
+      explosion_sound_player_.play();
 
       exploded_ = true;
       game_over_ = true;
