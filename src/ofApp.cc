@@ -10,7 +10,9 @@ void ofApp::setup() {
   SetUpLighting();
   SetUpCameras();
 
-  if (!thrust_sound_player_.load("sounds/thrust.wav")) {
+  if (thrust_sound_player_.load("sounds/thrust.wav")) {
+    thrust_sound_player_.setLoop(true);
+  } else {
     ofSystemAlertDialog("Thrust sound effect missing. Exiting...");
     ofExit();
   }
