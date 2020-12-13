@@ -16,6 +16,7 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxGui.h"
+#include "particle-emitter.h"
 
 class ofApp : public ofBaseApp {
  public:

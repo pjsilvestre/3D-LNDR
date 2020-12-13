@@ -201,6 +201,7 @@
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\octree.cc" />
     <ClCompile Include="src\ofApp.cc" />
+    <ClCompile Include="src\particle-emitter.cc" />
     <ClCompile Include="src\particle-force.cc" />
     <ClCompile Include="src\particle-system.cc" />
     <ClCompile Include="src\particle.cc" />
@@ -271,6 +272,7 @@
     <ClInclude Include="src\lander.h" />
     <ClInclude Include="src\octree.h" />
     <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="src\particle-emitter.h" />
     <ClInclude Include="src\particle-force.h" />
     <ClInclude Include="src\particle-system.h" />
     <ClInclude Include="src\particle.h" />

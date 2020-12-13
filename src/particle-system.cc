@@ -38,10 +38,15 @@ void ParticleSystem::DeleteDeadParticles() {
   auto iterator = particles_.begin();
 
   while (iterator != particles_.end()) {
-    const auto particle = *iterator;
+    const Particle* particle = *iterator;
 
     if (particle->lifespan_ > 0.0f &&
         particle->GetAge() > particle->lifespan_) {
+      // free allocated memory
+      delete particle;
+      particle = nullptr;
+
+      // remove from vector
       iterator = particles_.erase(iterator);
     } else {
       ++iterator;
