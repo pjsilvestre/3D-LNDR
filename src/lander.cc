@@ -40,6 +40,7 @@ void Lander::Update(const Octree& octree) {
       terrain_point_selected_ = true;
       terrain_point_ = octree.mesh_.getVertex(selected_node_.points_[0]);
     } else {
+      altitude_ = -1.0f;
       terrain_point_selected_ = false;
       terrain_point_ = glm::vec3(-10000.0f);
     }
