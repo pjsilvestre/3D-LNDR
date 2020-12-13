@@ -5,6 +5,7 @@ void ParticleSystem::Update() {
     return;
   }
 
+  DeleteDeadParticles();
   Integrate();
   UpdateForces();
 }
@@ -25,6 +26,21 @@ void ParticleSystem::AddParticle(Particle* particle) {
   }
 
   particles_.push_back(particle);
+}
+
+void ParticleSystem::DeleteDeadParticles() {
+  auto iterator = particles_.begin();
+
+  while (iterator != particles_.end()) {
+    const auto particle = *iterator;
+
+    if (particle->lifespan_ > 0.0f &&
+        particle->GetAge() > particle->lifespan_) {
+      iterator = particles_.erase(iterator);
+    } else {
+      ++iterator;
+    }
+  }
 }
 
 void ParticleSystem::Integrate() {

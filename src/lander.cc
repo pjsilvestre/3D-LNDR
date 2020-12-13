@@ -2,6 +2,9 @@
 
 Lander::Lander() {
   if (model_.loadModel("geo/lander.obj")) {
+    lifespan_ = -1.0f;
+
+    // TODO remove loaded_-related checks
     loaded_ = true;
     model_.setScaleNormalization(false);
     model_.setPosition(position_.x, position_.y, position_.z);

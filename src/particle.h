@@ -12,6 +12,7 @@
 class Particle {
  public:
   void Integrate();
+  float GetAge() const;
 
   float acceleration_damping_ = 0.99f;
   float angular_acceleration_ = 0.0f;
@@ -20,10 +21,10 @@ class Particle {
   float angular_velocity_damping_ = 0.99f;
   float initial_acceleration_ = 1.0f;
   float initial_angular_acceleration_ = 10.0f;
-  float lifespan_ = 0.0f;
+  float lifespan_ = 10.0f;
   float orientation_ = 0.0f;  // degrees
   float rotational_forces_ = 0.0f;
-  float spawn_time_ = 0.0f;
+  float spawn_time_ = ofGetElapsedTimef();
   float terminal_angular_velocity_ = 15.0f;
   float terminal_velocity_ = 5.0f;
   float velocity_damping_ = 0.99f;

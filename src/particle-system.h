@@ -20,6 +20,7 @@ class ParticleSystem {
   vector<Particle*> particles_;
   vector<ParticleForce*> forces_;
 
+  void DeleteDeadParticles();
   void Integrate();
   void UpdateForces();
 };

@@ -1,5 +1,7 @@
 #include "particle.h"
 
+float Particle::GetAge() const { return ofGetElapsedTimef() - spawn_time_; }
+
 void Particle::Integrate() {
   IntegratePosition();
   IntegrateRotation();
