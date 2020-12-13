@@ -164,7 +164,7 @@ void ofApp::DrawControlHints() const {
   const auto control_hint =
       "| movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
       "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 | "
-      "enable/disable free cam mouse: c";
+      "enable/disable free cam mouse: c |";
   const ofBitmapFont font;
   const auto bounding_box = font.getBoundingBox(control_hint, 0, 0);
   ofSetColor(ofColor::white);

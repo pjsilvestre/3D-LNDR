@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "constants.h"
 #include "lander.h"
 #include "particle-system.h"
 

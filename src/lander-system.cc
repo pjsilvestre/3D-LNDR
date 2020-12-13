@@ -19,38 +19,38 @@ void LanderSystem::Update(const Octree& octree) {
 
 void LanderSystem::ForwardThrust() {
   lander_.positional_forces_ += glm::rotateY(
-      glm::vec3(constants::kParticleInitialAcceleration, 0.0f, 0.0f),
+      glm::vec3(lander_.initial_acceleration_, 0.0f, 0.0f),
       glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::LeftwardThrust() {
   lander_.positional_forces_ += glm::rotateY(
-      glm::vec3(0.0f, 0.0f, -constants::kParticleInitialAcceleration),
+      glm::vec3(0.0f, 0.0f, -lander_.initial_acceleration_),
       glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::BackwardThrust() {
   lander_.positional_forces_ += glm::rotateY(
-      glm::vec3(-constants::kParticleInitialAcceleration, 0.0f, 0.0f),
+      glm::vec3(-lander_.initial_acceleration_, 0.0f, 0.0f),
       glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::RightwardThrust() {
   lander_.positional_forces_ += glm::rotateY(
-      glm::vec3(0.0f, 0.0f, constants::kParticleInitialAcceleration),
+      glm::vec3(0.0f, 0.0f, lander_.initial_acceleration_),
       glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::UpwardThrust() {
   lander_.positional_forces_ += glm::rotateY(
-      glm::vec3(0.0f, constants::kParticleInitialAcceleration, 0.0f),
+      glm::vec3(0.0f, lander_.initial_acceleration_, 0.0f),
       glm::radians(lander_.orientation_));
 }
 
 void LanderSystem::YawLeft() {
-  lander_.rotational_forces_ += constants::kParticleInitialAngularAcceleration;
+  lander_.rotational_forces_ += lander_.initial_angular_acceleration_;
 }
 
 void LanderSystem::YawRight() {
-  lander_.rotational_forces_ -= constants::kParticleInitialAngularAcceleration;
+  lander_.rotational_forces_ -= lander_.initial_angular_acceleration_;
 }
