@@ -180,9 +180,10 @@ void ofApp::draw() {
 
   ofDisableLighting();
   ofDisableDepthTest();
-  DrawFuelGauge();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   DrawControlHints();
+  DrawFuelGauge();
+  DrawVelocityGauge();
   ofEnableDepthTest();
   ofEnableLighting();
 }
@@ -260,15 +261,35 @@ void ofApp::DrawControlHints() const {
 void ofApp::DrawFuelGauge() const {
   string fuel_message;
   if (fuel_ < 0.0f) {
-    fuel_message = "fuel: 0.0 seconds";
+    fuel_message = "fuel: 0 seconds";
   } else {
-    fuel_message = "fuel: " + to_string(fuel_) + " seconds";
+    fuel_message = "fuel: " + to_string(static_cast<int>(fuel_)) + " seconds";
   }
 
   const auto bounding_box =
       gauge_font_.getStringBoundingBox(fuel_message, 0, 0);
   ofSetColor(255, 255, 255, 180);
   gauge_font_.drawString(fuel_message, 50.0f, bounding_box.height + 50.0f);
+}
+
+//--------------------------------------------------------------
+void ofApp::DrawVelocityGauge() const {
+  const auto velocity = lander_system_.get_velocity();
+  const auto velocity_magnitude = glm::length(velocity);
+  const auto velocity_message =
+      "velocity: " + to_string(static_cast<int>(velocity_magnitude)) +
+      " units per second";
+
+  const auto bounding_box =
+      gauge_font_.getStringBoundingBox(velocity_message, 0, 0);
+
+  if (velocity_threshold_ < velocity_magnitude) {
+    ofSetColor(255, 0, 0, 180);
+  } else {
+    ofSetColor(0, 255, 0, 180);
+  }
+
+  gauge_font_.drawString(velocity_message, 50.0f, bounding_box.height + 100.0f);
 }
 
 //--------------------------------------------------------------

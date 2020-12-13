@@ -37,6 +37,7 @@ class ofApp : public ofBaseApp {
   void DrawAxis(const glm::vec3& location) const;
   void DrawControlHints() const;
   void DrawFuelGauge() const;
+  void DrawVelocityGauge() const;
 
   void keyPressed(int key) override;
   void StartThrusterEffects();
@@ -63,6 +64,7 @@ class ofApp : public ofBaseApp {
   bool shaders_loaded_ = false;
 
   float fuel_ = 15.0f;
+  float velocity_threshold_ = 2.0f;
 
   ofCamera* current_cam_ = &follow_cam_;
   ofCamera follow_cam_;

@@ -21,6 +21,7 @@ class LanderSystem : public ParticleSystem {
   float get_orientation() const { return lander_.orientation_; }
   void set_position(const glm::vec3& position) { lander_.position_ = position; }
   glm::vec3 get_position() const { return lander_.position_; }
+  glm::vec3 get_velocity() const { return lander_.velocity_; }
 
   // Lander setter, getters
   void enable_altimeter() { lander_.altimeter_enabled_ = true; }
