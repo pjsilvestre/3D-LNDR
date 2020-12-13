@@ -32,6 +32,8 @@ class LanderSystem : public ParticleSystem {
   float get_altitude() const { return lander_.altitude_; }
   Box get_bounds() const { return lander_.bounds_; }
 
+  bool is_colliding() const { return colliding_; }
+
   void ForwardThrust();
   void LeftwardThrust();
   void BackwardThrust();
@@ -40,7 +42,11 @@ class LanderSystem : public ParticleSystem {
   void YawLeft();
   void YawRight();
 
+  void Reset();
+
  private:
+  bool colliding_ = false;
+
   Lander lander_;
   GravityForce gravity_ = GravityForce(glm::vec3(0.0f, -0.1f, 0.0f));
   XZTurbulenceForce turbulence_ =

@@ -119,10 +119,14 @@ void ofApp::update() {
 
   background_.resize(ofGetWidth(), ofGetHeight());
 
-  lander_system_.Update(octree_);
+  if (!game_over_ && !successful_landing_) {
+    lander_system_.Update(octree_);
 
-  thruster_.position_ = lander_system_.get_position();
-  thruster_.Update();
+    thruster_.position_ = lander_system_.get_position();
+    thruster_.Update();
+
+    CheckWinCondition();
+  }
 }
 
 //--------------------------------------------------------------
@@ -146,6 +150,21 @@ void ofApp::UpdateLighting() {
 }
 
 //--------------------------------------------------------------
+void ofApp::CheckWinCondition() {
+  if (lander_system_.is_colliding()) {
+    if (glm::length(lander_system_.get_velocity()) < velocity_threshold_) {
+      if (glm::length(landing_area_ - lander_system_.get_position()) < 5.0f) {
+        successful_landing_ = true;
+        game_over_ = true;
+      }
+    } else {
+      exploded_ = true;
+      game_over_ = true;
+    }
+  }
+}
+
+//--------------------------------------------------------------
 void ofApp::draw() {
   // SetUpVertexBuffer();
 
@@ -160,12 +179,26 @@ void ofApp::draw() {
 
   mars_.drawFaces();
 
-  lander_system_.Draw();
+  if (!game_over_) {
+    lander_system_.Draw();
+    thruster_.Draw();
+  } else {
+    if (successful_landing_) lander_system_.Draw();
+  }
 
-  ofSetColor(128, 128, 128, 64);
+  if (game_over_) {
+    if (successful_landing_) {
+      // draw green sphere
+      ofSetColor(0, 255, 0, 64);
+    } else {
+      // draw red sphere
+      ofSetColor(255, 0, 0, 64);
+    }
+  } else {
+    // draw grey sphere
+    ofSetColor(128, 128, 128, 64);
+  }
   ofDrawSphere(landing_area_, 7.0f);
-
-  thruster_.Draw();
 
   // FIXME
   // ofSetColor(ofColor::white);
@@ -180,10 +213,17 @@ void ofApp::draw() {
 
   ofDisableLighting();
   ofDisableDepthTest();
-  if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
-  DrawControlHints();
-  DrawFuelGauge();
-  DrawVelocityGauge();
+  if (gui_displayed_) {
+    DrawControlHints();
+    if (!game_over_) {
+      if (!exploded_) {
+        if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
+        DrawVelocityGauge();
+      }
+
+      DrawFuelGauge();
+    }
+  }
   ofEnableDepthTest();
   ofEnableLighting();
 }
@@ -248,7 +288,7 @@ void ofApp::DrawControlHints() const {
   const auto control_hint =
       "| movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
       "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 | "
-      "enable/disable free cam mouse: c |";
+      "enable/disable free cam mouse: c | toggle gui: h |";
   const auto bounding_box =
       control_hint_font_.getStringBoundingBox(control_hint, 0, 0);
   ofSetColor(255, 255, 255, 180);
@@ -295,6 +335,51 @@ void ofApp::DrawVelocityGauge() const {
 //--------------------------------------------------------------
 void ofApp::keyPressed(const int key) {
   switch (key) {
+    case 'H':
+    case 'h':
+      gui_displayed_ = !gui_displayed_;
+      break;
+    case 'X':
+    case 'x':
+      if (lander_system_.altimeter_enabled()) {
+        lander_system_.disable_altimeter();
+      } else {
+        lander_system_.enable_altimeter();
+      }
+      break;
+    case 'C':
+    case 'c':
+      if (current_cam_ == &free_cam_) {
+        if (free_cam_.getMouseInputEnabled()) {
+          free_cam_.disableMouseInput();
+        } else {
+          free_cam_.enableMouseInput();
+        }
+      }
+      break;
+    case 'R':
+    case 'r':
+      Reset();
+      break;
+    case '1':
+      current_cam_ = &follow_cam_;
+      break;
+    case '2':
+      current_cam_ = &onboard_cam_;
+      break;
+    case '3':
+      current_cam_ = &tracking_cam_;
+      break;
+    case '4':
+      current_cam_ = &free_cam_;
+      break;
+    default:
+      break;
+  }
+
+  if (game_over_) return;
+
+  switch (key) {
     case 'W':
     case 'w':
       if (fuel_ < 0.0f) return;
@@ -336,39 +421,21 @@ void ofApp::keyPressed(const int key) {
       lander_system_.YawRight();
       StartThrusterEffects();
       break;
-    case 'X':
-    case 'x':
-      if (lander_system_.altimeter_enabled()) {
-        lander_system_.disable_altimeter();
-      } else {
-        lander_system_.enable_altimeter();
-      }
-    case 'C':
-    case 'c':
-      if (current_cam_ == &free_cam_) {
-        if (free_cam_.getMouseInputEnabled()) {
-          free_cam_.disableMouseInput();
-        } else {
-          free_cam_.enableMouseInput();
-        }
-      }
-      break;
-    case '1':
-      current_cam_ = &follow_cam_;
-      break;
-    case '2':
-      current_cam_ = &onboard_cam_;
-      break;
-    case '3':
-      current_cam_ = &tracking_cam_;
-      break;
-    case '4':
-      current_cam_ = &free_cam_;
-      break;
     default:
       break;
   }
 }
+
+//--------------------------------------------------------------
+void ofApp::Reset() {
+  fuel_ = 15.0f;
+  exploded_ = false;
+  game_over_ = false;
+  successful_landing_ = false;
+
+  lander_system_.Reset();
+}
+
 //--------------------------------------------------------------
 void ofApp::StartThrusterEffects() {
   if (!thruster_light_.getIsEnabled()) thruster_light_.enable();

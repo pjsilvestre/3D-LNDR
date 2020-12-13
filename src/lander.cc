@@ -73,4 +73,6 @@ void Lander::DrawCollisionBoxes() const {
   for (const auto& box : collision_boxes_) {
     box.Draw();
   }
+
+  ofFill();
 }

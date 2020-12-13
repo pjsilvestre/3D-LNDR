@@ -30,6 +30,7 @@ class ofApp : public ofBaseApp {
   void update() override;
   void UpdateCameras();
   void UpdateLighting();
+  void CheckWinCondition();
 
   void draw() override;
   // void SetUpVertexBuffer();
@@ -40,6 +41,7 @@ class ofApp : public ofBaseApp {
   void DrawVelocityGauge() const;
 
   void keyPressed(int key) override;
+  void Reset();
   void StartThrusterEffects();
 
   void keyReleased(int key) override;
@@ -59,12 +61,15 @@ class ofApp : public ofBaseApp {
   void gotMessage(ofMessage msg) override;
 
   bool dragging_ = false;
-  bool terrain_selected_ = true;
-  bool gui_displayed_ = false;
+  bool exploded_ = false;
+  bool game_over_ = false;
+  bool gui_displayed_ = true;
   bool shaders_loaded_ = false;
+  bool successful_landing_ = false;
+  bool terrain_selected_ = true;
 
   float fuel_ = 15.0f;
-  float velocity_threshold_ = 2.0f;
+  float velocity_threshold_ = 4.0f;
 
   ofCamera* current_cam_ = &follow_cam_;
   ofCamera follow_cam_;
@@ -89,7 +94,7 @@ class ofApp : public ofBaseApp {
   // ofShader shader_;
   // ofVbo vertex_buffer_;
 
-  glm::vec3 landing_area_ = glm::vec3(-5.0f, -10.0f, 40.0f);
+  glm::vec3 landing_area_ = glm::vec3(-10.0f, -10.0f, 40.0f);
   glm::vec3 mouse_last_pos_ = glm::vec3(0.0f);
 
   Octree octree_;
