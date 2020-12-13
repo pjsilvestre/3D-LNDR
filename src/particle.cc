@@ -1,8 +1,17 @@
 #include "particle.h"
 
+void Particle::Update() {
+  const auto age = GetAge();
+
+  // update a Particle's color based on its age from white to red
+  color_ = ofColor(255, ofMap(age, 0, lifespan_, 255, 0),
+                   ofMap(age, 0, lifespan_, 255, 0),
+                   ofMap(age, 0, lifespan_, 255, 0));
+}
+
 void Particle::Draw() const {
-  ofSetColor(ofColor::white);
-  ofDrawSphere(position_, 0.1f);
+  ofSetColor(color_);
+  ofDrawSphere(position_, radius_);
 }
 
 float Particle::GetAge() const { return ofGetElapsedTimef() - spawn_time_; }

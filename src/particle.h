@@ -11,6 +11,7 @@
 
 class Particle {
  public:
+  void Update();
   virtual void Draw() const;
 
   void Integrate();
@@ -23,8 +24,9 @@ class Particle {
   float angular_velocity_damping_ = 0.99f;
   float initial_acceleration_ = 1.0f;
   float initial_angular_acceleration_ = 10.0f;
-  float lifespan_ = 10.0f;
+  float lifespan_ = 0.5f;
   float orientation_ = 0.0f;  // degrees
+  float radius_ = 0.1f;
   float rotational_forces_ = 0.0f;
   float spawn_time_ = ofGetElapsedTimef();
   float terminal_angular_velocity_ = 15.0f;
@@ -36,6 +38,8 @@ class Particle {
   glm::vec3 positional_forces_ = glm::vec3(0.0f);
   glm::vec3 velocity_ = glm::vec3(0.0f);
   glm::mat4 transformation_matrix_ = glm::mat4(0.0f);
+
+  ofColor color_ = ofColor::red;
 
  private:
   void IntegratePosition();

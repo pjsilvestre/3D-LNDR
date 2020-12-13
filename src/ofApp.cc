@@ -2,14 +2,19 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+  ofEnableBlendMode(OF_BLENDMODE_ADD);
   ofEnableDepthTest();
   ofEnableSmoothing();
   ofSetVerticalSync(true);
   ofSetFrameRate(60);
 
-  SetUpLighting();
+  LoadAssets();
   SetUpCameras();
+  SetUpLighting();
+}
 
+//--------------------------------------------------------------
+void ofApp::LoadAssets() {
   if (thrust_sound_player_.load("sounds/thrust.wav")) {
     thrust_sound_player_.setLoop(true);
   } else {
@@ -31,44 +36,24 @@ void ofApp::setup() {
     ofExit();
   }
 
-  if (!ofLoadImage(particle_texture_, "images/particle.png")) {
-    ofSystemAlertDialog("Particle texture missing. Exiting...");
-    ofExit();
-  }
-
-#ifdef TARGET_OPENGLES
-  if (shader_.load("shaders-gles/shader")) shaders_loaded = true;
-#else
-  if (shader_.load("shaders/shader")) shaders_loaded_ = true;
-#endif
-
-  if (!shaders_loaded_) {
-    ofSystemAlertDialog("Shaders missing. Exiting...");
-    ofExit();
-  }
-}
-
-//--------------------------------------------------------------
-void ofApp::SetUpLighting() {
-  ofSetSmoothLighting(true);
-
-  lander_point_light_.setup();
-  lander_point_light_.setPointLight();
-  lander_point_light_.setAttenuation(1.0f, 0.01f, 0.01f);
-  lander_point_light_.enable();
-
-  landing_area_point_light_.setup();
-  landing_area_point_light_.setPointLight();
-  landing_area_point_light_.rotateDeg(270, glm::vec3(1.0f, 0.0f, 0.0f));
-  auto above_landing_area = landing_area_;
-  above_landing_area.y += 5.0f;
-  landing_area_point_light_.setPosition(above_landing_area);
-  landing_area_point_light_.enable();
-
-  terrain_overhead_directional_light_.setup();
-  terrain_overhead_directional_light_.setDirectional();
-  terrain_overhead_directional_light_.setPosition(0.0f, 100.0f, 0.0f);
-  terrain_overhead_directional_light_.enable();
+  // FIXME
+  //  if (ofLoadImage(particle_texture_, "images/particle.png")) {
+  //    ofDisableArbTex();
+  //  } else {
+  //    ofSystemAlertDialog("Particle texture missing. Exiting...");
+  //    ofExit();
+  //  }
+  //
+  //#ifdef TARGET_OPENGLES
+  //  if (shader_.load("shaders-gles/shader")) shaders_loaded = true;
+  //#else
+  //  if (shader_.load("shaders/shader")) shaders_loaded_ = true;
+  //#endif
+  //
+  //  if (!shaders_loaded_) {
+  //    ofSystemAlertDialog("Shaders missing. Exiting...");
+  //    ofExit();
+  //  }
 }
 
 //--------------------------------------------------------------
@@ -90,9 +75,44 @@ void ofApp::SetUpCameras() {
 }
 
 //--------------------------------------------------------------
+void ofApp::SetUpLighting() {
+  ofSetSmoothLighting(true);
+
+  landing_area_light_.setup();
+  landing_area_light_.setPointLight();
+  landing_area_light_.rotateDeg(270, glm::vec3(1.0f, 0.0f, 0.0f));
+  auto above_landing_area = landing_area_;
+  above_landing_area.y += 5.0f;
+  landing_area_light_.setPosition(above_landing_area);
+  landing_area_light_.enable();
+
+  terrain_light_.setup();
+  terrain_light_.setDirectional();
+  terrain_light_.setPosition(0.0f, 100.0f, 0.0f);
+  terrain_light_.enable();
+
+  thruster_light_.setup();
+  thruster_light_.setPointLight();
+  thruster_light_.setAttenuation(1.0f, 0.5f, 0.1f);
+}
+
+//--------------------------------------------------------------
 void ofApp::update() {
+  UpdateCameras();
+  UpdateLighting();
+
+  current_cam_ == &free_cam_ ? ofShowCursor() : ofHideCursor();
+
   if (background_loaded_) background_.resize(ofGetWidth(), ofGetHeight());
 
+  lander_system_.Update(octree_);
+
+  thruster_.position_ = lander_system_.get_position();
+  thruster_.Update();
+}
+
+//--------------------------------------------------------------
+void ofApp::UpdateCameras() {
   const auto lander_position = lander_system_.get_position();
 
   follow_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, -45.0f, 25.0f,
@@ -100,29 +120,34 @@ void ofApp::update() {
   onboard_cam_.orbitDeg(lander_system_.get_orientation() + 270.0f, 270.0f, 0.7f,
                         lander_position);
   tracking_cam_.lookAt(lander_position);
+}
 
-  current_cam_ == &free_cam_ ? ofShowCursor() : ofHideCursor();
+//--------------------------------------------------------------
+void ofApp::UpdateLighting() {
+  auto lander_position = lander_system_.get_position();
+  lander_position.y -= 5.0f;
 
-  lander_point_light_.setPosition(lander_position);
-  lander_point_light_.orbitDeg(0.0f, 270.0f, 0.0f, lander_position);
-
-  lander_system_.Update(octree_);
+  thruster_light_.setPosition(lander_position);
+  thruster_light_.orbitDeg(0.0f, 270.0f, 0.0f, lander_position);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+  // SetUpVertexBuffer();
+
   ofBackground(ofColor::black);
 
   if (background_loaded_) {
+    ofDisableLighting();
     glDepthMask(false);
     ofSetColor(64, 64, 64, 256);
     background_.draw(0.0f, 0.0f);
     glDepthMask(true);
+    ofEnableLighting();
   }
 
   current_cam_->begin();
 
-  ofEnableLighting();
   mars_.drawFaces();
 
   if (lander_system_.is_loaded()) {
@@ -132,12 +157,43 @@ void ofApp::draw() {
   ofSetColor(128, 128, 128, 64);
   ofDrawSphere(landing_area_, 7.0f);
 
+  thruster_.Draw();
+
+  // FIXME
+  // ofSetColor(ofColor::white);
+  // shader_.begin();
+  // particle_texture_.bind();
+  // vertex_buffer_.draw(GL_POINTS, 0,
+  //                    thruster_.particle_system_.particles_.size());
+  // particle_texture_.unbind();
+  // shader_.end();
+
   current_cam_->end();
 
   ofDisableLighting();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   DrawControlHints();
 }
+
+////--------------------------------------------------------------
+// void ofApp::SetUpVertexBuffer() {
+//  // FIXME
+//  if (thruster_.particle_system_.particles_.empty()) return;
+//
+//  vector<glm::vec3> points;
+//  vector<glm::vec3> sizes;
+//
+//  for (auto& particle : thruster_.particle_system_.particles_) {
+//    points.push_back(particle->position_);
+//    sizes.push_back(glm::vec3(1.0f));
+//  }
+//
+//  const int total = points.size();
+//
+//  vertex_buffer_.clear();
+//  vertex_buffer_.setVertexData(&points[0], total, GL_STATIC_DRAW);
+//  vertex_buffer_.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
+//}
 
 //--------------------------------------------------------------
 void ofApp::DrawAltimeterGauge() const {
@@ -196,36 +252,36 @@ void ofApp::keyPressed(const int key) {
     case 'W':
     case 'w':
       lander_system_.ForwardThrust();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case 'A':
     case 'a':
       lander_system_.LeftwardThrust();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case 'S':
     case 's':
       lander_system_.BackwardThrust();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case 'D':
     case 'd':
       lander_system_.RightwardThrust();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case ' ':
       lander_system_.UpwardThrust();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case 'Q':
     case 'q':
       lander_system_.YawLeft();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case 'E':
     case 'e':
       lander_system_.YawRight();
-      if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+      StartThrusterEffects();
       break;
     case 'X':
     case 'x':
@@ -260,6 +316,12 @@ void ofApp::keyPressed(const int key) {
       break;
   }
 }
+//--------------------------------------------------------------
+void ofApp::StartThrusterEffects() {
+  if (!thruster_light_.getIsEnabled()) thruster_light_.enable();
+  if (!thrust_sound_player_.isPlaying()) thrust_sound_player_.play();
+  thruster_.Start();
+}
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(const int key) {
@@ -277,7 +339,9 @@ void ofApp::keyReleased(const int key) {
     case 'q':
     case 'E':
     case 'e':
+      thruster_light_.disable();
       thrust_sound_player_.stop();
+      thruster_.Stop();
       break;
     default:
       break;

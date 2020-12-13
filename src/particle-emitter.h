@@ -17,10 +17,10 @@ class ParticleEmitter {
   void Stop();
 
   bool started_ = false;
-  int group_size_ = 1;
-  int rate_ = 1;
+  int group_size_ = 100;
+  int rate_ = 100;
   float last_spawn_time_ = -1.0f;
-  glm::vec3 initial_velocity_ = glm::vec3(0.0f, 10.0f, 0.0f);
+  glm::vec3 initial_velocity_ = glm::vec3(0.0f, -10.0f, 0.0f);
   glm::vec3 position_ = glm::vec3(0.0f);
   ParticleSystem particle_system_;
 

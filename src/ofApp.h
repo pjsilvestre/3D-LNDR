@@ -4,8 +4,10 @@
  * @author Kevin M. Smith (CS 134 SJSU)
  * @author Patrick Silvestre
  *
+ * TODO fuel-based thruster limitation
+ * TODO landing area win condition
  * TODO lander physics (explosion upon impact velocity upon some threshold)
- * TODO lander exhaust using particle emitters and shaders
+ * TODO fix shaders
  */
 
 #pragma once
@@ -21,18 +23,25 @@
 class ofApp : public ofBaseApp {
  public:
   void setup() override;
-  void SetUpLighting();
+  void LoadAssets();
   void SetUpCameras();
+  void SetUpLighting();
 
   void update() override;
+  void UpdateCameras();
+  void UpdateLighting();
 
   void draw() override;
+  // void SetUpVertexBuffer();
   void DrawAltimeterGauge() const;
   void DrawAxis(const glm::vec3& location) const;
   void DrawControlHints() const;
 
   void keyPressed(int key) override;
+  void StartThrusterEffects();
+
   void keyReleased(int key) override;
+
   void mouseMoved(int x, int y) override;
 
   void mouseDragged(int x, int y, int button) override;
@@ -59,21 +68,24 @@ class ofApp : public ofBaseApp {
   ofCamera tracking_cam_;
   ofEasyCam free_cam_;
 
-  ofLight lander_point_light_;
-  ofLight landing_area_point_light_;
-  ofLight terrain_overhead_directional_light_;
+  ofImage background_;
+
+  ofLight landing_area_light_;
+  ofLight terrain_light_;
+  ofLight thruster_light_;
 
   ofSoundPlayer thrust_sound_player_;
 
-  ofImage background_;
   ofxAssimpModelLoader mars_;
 
-  ofTexture particle_texture_;
-  ofShader shader_;
+  // ofTexture particle_texture_;
+  // ofShader shader_;
+  // ofVbo vertex_buffer_;
 
   glm::vec3 landing_area_ = glm::vec3(-5.0f, -10.0f, 40.0f);
   glm::vec3 mouse_last_pos_ = glm::vec3(0.0f);
 
   Octree octree_;
   LanderSystem lander_system_;
+  ParticleEmitter thruster_;
 };

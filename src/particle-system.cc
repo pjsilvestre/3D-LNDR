@@ -5,6 +5,10 @@ void ParticleSystem::Update() {
     return;
   }
 
+  for (auto& particle : particles_) {
+    particle->Update();
+  }
+
   DeleteDeadParticles();
   Integrate();
   UpdateForces();

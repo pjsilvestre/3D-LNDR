@@ -1,6 +1,7 @@
 /**
  * @class ParticleSystem
- * @brief Encapsulates a collection of Particles and the ParticleForces applied on them
+ * @brief Encapsulates a collection of Particles and the ParticleForces applied
+ * on them
  * @author Patrick Silvestre
  */
 
@@ -17,10 +18,10 @@ class ParticleSystem {
   void AddForce(ParticleForce* particle_force);
   void AddParticle(Particle* particle);
 
- protected:
   vector<Particle*> particles_;
   vector<ParticleForce*> forces_;
 
+ private:
   void DeleteDeadParticles();
   void Integrate();
   void UpdateForces();
