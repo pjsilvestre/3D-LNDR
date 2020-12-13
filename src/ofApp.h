@@ -75,6 +75,9 @@ class ofApp : public ofBaseApp {
 
   ofSoundPlayer thrust_sound_player_;
 
+  ofTrueTypeFont altimeter_font_;
+  ofTrueTypeFont control_hint_font_;
+
   ofxAssimpModelLoader mars_;
 
   // ofTexture particle_texture_;

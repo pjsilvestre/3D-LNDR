@@ -15,6 +15,14 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::LoadAssets() {
+  if (background_.load("images/space.jpg")) {
+    background_.resize(ofGetWidth(), ofGetHeight());
+    background_.setImageType(OF_IMAGE_GRAYSCALE);
+  } else {
+    ofSystemAlertDialog("Background image missing. Exiting...");
+    ofExit();
+  }
+
   if (thrust_sound_player_.load("sounds/thrust.wav")) {
     thrust_sound_player_.setLoop(true);
   } else {
@@ -22,11 +30,15 @@ void ofApp::LoadAssets() {
     ofExit();
   }
 
-  if (background_.load("images/space.jpg")) {
-    background_.resize(ofGetWidth(), ofGetHeight());
-    background_.setImageType(OF_IMAGE_GRAYSCALE);
-  } else {
-    ofSystemAlertDialog("Background image missing. Exiting...");
+  if (!altimeter_font_.load("fonts/Source_Code_Pro/SourceCodePro-Black.ttf",
+                            20)) {
+    ofSystemAlertDialog("Font missing. Exiting...");
+    ofExit();
+  }
+
+  if (!control_hint_font_.load("fonts/Source_Code_Pro/SourceCodePro-Black.ttf",
+                               16)) {
+    ofSystemAlertDialog("Font missing. Exiting...");
     ofExit();
   }
 
@@ -67,6 +79,7 @@ void ofApp::SetUpCameras() {
   onboard_cam_.setNearClip(0.1f);
 
   tracking_cam_.setFov(22.5f);
+  tracking_cam_.setNearClip(0.1f);
   auto above_landing_area = landing_area_;
   above_landing_area.y += 100.0f;
   tracking_cam_.setPosition(above_landing_area);
@@ -138,10 +151,10 @@ void ofApp::draw() {
   // SetUpVertexBuffer();
 
   ofDisableLighting();
-  glDepthMask(false);
+  ofDisableDepthTest();
   ofSetColor(64, 64, 64, 256);
   background_.draw(0.0f, 0.0f);
-  glDepthMask(true);
+  ofEnableDepthTest();
   ofEnableLighting();
 
   current_cam_->begin();
@@ -167,8 +180,11 @@ void ofApp::draw() {
   current_cam_->end();
 
   ofDisableLighting();
+  ofDisableDepthTest();
   if (lander_system_.altimeter_enabled()) DrawAltimeterGauge();
   DrawControlHints();
+  ofEnableDepthTest();
+  ofEnableLighting();
 }
 
 ////--------------------------------------------------------------
@@ -193,17 +209,14 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::DrawAltimeterGauge() const {
-  // TODO replace bitmap string with truetype string
-
   const auto altimeter_message =
       "altitude: " + to_string(lander_system_.get_altitude());
-  const ofBitmapFont font;
-  const auto bounding_box = font.getBoundingBox(altimeter_message, 0, 0);
-  ofSetColor(ofColor::white);
-  ofDrawBitmapString(
-      altimeter_message,
-      glm::vec3(ofGetWidth() - (bounding_box.width / 2.0f + 80.0f),
-                10.0f + bounding_box.height / 2.0f, 0.0f));
+  const auto bounding_box =
+      altimeter_font_.getStringBoundingBox(altimeter_message, 0, 0);
+  ofSetColor(255, 255, 255, 180);
+  altimeter_font_.drawString(altimeter_message,
+                             ofGetWidth() - (bounding_box.width + 50.0f),
+                             bounding_box.height + 50.0f);
 }
 
 //--------------------------------------------------------------
@@ -235,11 +248,12 @@ void ofApp::DrawControlHints() const {
       "| movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
       "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 | "
       "enable/disable free cam mouse: c |";
-  const ofBitmapFont font;
-  const auto bounding_box = font.getBoundingBox(control_hint, 0, 0);
-  ofSetColor(ofColor::white);
-  ofDrawBitmapString(control_hint, 10.0f,
-                     ofGetHeight() - bounding_box.height / 2.0f);
+  const auto bounding_box =
+      control_hint_font_.getStringBoundingBox(control_hint, 0, 0);
+  ofSetColor(255, 255, 255, 180);
+  control_hint_font_.drawString(
+      control_hint, ofGetWidth() / 2.0f - bounding_box.width / 2.0f,
+      ofGetHeight() - (bounding_box.height / 2.0f + 25.0f));
 }
 
 //--------------------------------------------------------------
