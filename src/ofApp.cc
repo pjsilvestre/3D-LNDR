@@ -2,11 +2,11 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
+  ofEnableAntiAliasing();
   ofEnableBlendMode(OF_BLENDMODE_ADD);
-  ofEnableDepthTest();
   ofEnableSmoothing();
-  ofSetVerticalSync(true);
   ofSetFrameRate(60);
+  ofSetVerticalSync(true);
 
   LoadAssets();
   SetUpCameras();
@@ -128,6 +128,11 @@ void ofApp::update() {
 
   explosion_.Update();
 
+  if (game_over_) {
+    // display gui so user knows how to reset in case they disabled the gui
+    gui_displayed_ = true;
+  }
+
   if (!game_over_ && !successful_landing_) {
     lander_system_.Update(octree_);
 
@@ -135,11 +140,6 @@ void ofApp::update() {
     thruster_.Update();
 
     CheckWinCondition();
-  }
-
-  if (game_over_) {
-    // display gui so user knows how to reset in case they disabled the gui
-    gui_displayed_ = true;
   }
 }
 
@@ -571,18 +571,3 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button) { dragging_ = false; }
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y) {}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y) {}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h) {}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo drag_info) {}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg) {}

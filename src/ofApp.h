@@ -4,9 +4,6 @@
  * @author Kevin M. Smith (CS 134 SJSU)
  * @author Patrick Silvestre
  *
- * TODO fuel-based thruster limitation
- * TODO landing area win condition
- * TODO lander physics (explosion upon impact velocity upon some threshold)
  * TODO fix shaders
  */
 
@@ -54,11 +51,6 @@ class ofApp : public ofBaseApp {
 
   void mousePressed(int x, int y, int button) override;
   void mouseReleased(int x, int y, int button) override;
-  void mouseEntered(int x, int y) override;
-  void mouseExited(int x, int y) override;
-  void windowResized(int w, int h) override;
-  void dragEvent(ofDragInfo drag_info) override;
-  void gotMessage(ofMessage msg) override;
 
   bool dragging_ = false;
   bool exploded_ = false;
@@ -100,6 +92,6 @@ class ofApp : public ofBaseApp {
 
   Octree octree_;
   LanderSystem lander_system_;
-  ThrustParticleEmitter thruster_;
   ParticleEmitter explosion_;
+  ThrustParticleEmitter thruster_;
 };
