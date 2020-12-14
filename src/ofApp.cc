@@ -136,6 +136,11 @@ void ofApp::update() {
 
     CheckWinCondition();
   }
+
+  if (game_over_) {
+    // display gui so user knows how to reset in case they disabled the gui
+    gui_displayed_ = true;
+  }
 }
 
 //--------------------------------------------------------------
@@ -302,10 +307,16 @@ void ofApp::DrawAxis(const glm::vec3& location) const {
 
 //--------------------------------------------------------------
 void ofApp::DrawControlHints() const {
-  const auto control_hint =
-      "| movement: wasd | thrust: space | rotation: qe | altimeter: x | follow "
-      "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 | "
-      "enable/disable free cam mouse: c | toggle gui: h |";
+  string control_hint;
+  if (game_over_) {
+    control_hint = "| reset: r |";
+  } else {
+    control_hint =
+        "| movement: wasd | thrust: space | rotation: qe | altimeter: x | "
+        "follow "
+        "camera: 1 | onboard camera: 2 | tracking camera: 3 | free camera: 4 | "
+        "enable/disable free cam mouse: c | toggle gui: h |";
+  }
   const auto bounding_box =
       control_hint_font_.getStringBoundingBox(control_hint, 0, 0);
   ofSetColor(255, 255, 255, 180);
